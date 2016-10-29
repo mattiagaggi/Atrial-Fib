@@ -157,6 +157,10 @@ class heart:
         randgrid = self.gridofexcite*randgrid #cells that are dysfunctional and not excited
         
         return randgrid
+    
+    def Volt(self,grid):
+        
+        return 20-((110./self.excitation)*(self.excitation-grid))
         
         
     def electrocardio(self,function,plot=False):
@@ -177,15 +181,17 @@ class run: #Class to run code
         self.stepsstored=stepsstored
         self.electrocardio=[]
         
-        self.associatedV
+        self.associatedV=np.zeros((self.heart.L,self.heart.L))
+        
+        
         
         self.electrocardio.append(0)
         array=np.arange(0,1,1.*2/self.heart.L)
         array=np.append(array,array[::-1])
         array=np.matrix(array)
-        self.electrocardiof=array.transpose()*array
-        self.electrocardiof=np.array(self.electrocardiof)
         
+        
+        self.electrocardiof=np.array(self.electrocardiof)
         self.fibthreshold=150000
         self.tstopfib=300
         self.infibrillation=False

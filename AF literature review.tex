@@ -1,0 +1,192 @@
+%Instruct LaTeX that you would like to format an article and are using a4paper, default is US Letter size!
+\documentclass{article}
+
+%Set up a4paper size and sensible margins
+\usepackage[a4paper]{geometry}
+
+
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{amsthm, amssymb}
+\usepackage[ansinew]{inputenc}
+%Include support for graphics! 
+\usepackage{graphicx}
+%Include support for url linking
+\usepackage{hyperref}
+
+%for the image in this so it can be positoned where desired
+\usepackage{float}
+
+
+\title{A Literature Review of Atrial Fibrillation}
+\author{ Mattia Gaggi CID:00863268\\
+ \vspace{0.2cm}
+Supervisor: Kim Christensen}
+ 
+\date{\today}
+
+\begin{document}
+\maketitle
+\vspace{-0.65cm}
+\centerline{\textbf{Word Count:} 2498}
+\begin{abstract}
+In this paper, a summary of the physiology of Atrial Fibrillation (AF) and the research about it was carried out. After a short introduction about AF, the dynamics of electrical impulse propagation through the myocardiac tissue and the dynamics of arrhythmia were described. Then, a historical review of the main biophysical models and the Cellular Automata (CA) models was done. Finally, some ideas for future research developments were presented.
+\end{abstract}
+
+\vspace{0.2cm}
+
+
+
+\vspace{0.2cm}
+
+\section{Introduction}
+
+
+
+
+Atrial Fibrillation is a type of supraventricular tachycardia and one of the major causes of stroke and heart failure. Population based studies estimate that over 30 millions of people worldwide are suffering from AF with a higher incidence on people over 65 years old~\cite{stats_af}. 
+Only in the UK, expenses related to this condition account for more than $1\%$ of the total budget of the National Health Service, which is more than 1 billion US dollars~\cite{stats_health}. Even though many treatments have been developed, the mechanisms behind this condition are not completely understood and AF remains a major topic in medical research. 
+
+
+The incredible growth in computational power over the last 30 years has enabled the implementation of increasingly more accurate models of the heart.  These computational models are a powerful tool to study the mechanisms underlying cardiac arrhythmias and are usually classified either as biophysically accurate (physiological) models or as CA models. 
+
+CA models are the simplest kind, where the cardiac tissue is modelled by a grid in which cells exist in a number of discrete states. Some of the advantages of these models over more biophysically accurate ones are the reduced computational time to run simulations and the possibility to easily implement tissue anisotropies~\cite{kim2015}. 
+
+CA models have been successful in exhibiting fibrillation behaviour and might be the key to a better understanding of AF. 
+
+\section{ Cardiac Electrophysiology} 
+ 
+
+\subsection{ Heart structure and Electrical Impulses} 
+
+
+Each heart beat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres and finally from the ventricular endocardium to the ventricular epicardium~\cite{cardiacphys_book1987}. The electric signal is conducted in the cardiac muscle cells thanks to the polarisation mechanism of the cell membrane. 
+
+When a muscle cell (myocyte) is at rest, there is a built up potential difference between the outside and the inside of the cell 
+(polarisation). If excited by its neighbour cells, the cell's membrane  becomes permeable to the passage of $ Na^{+}$, $Ca_{2}^{+}$ (in the cell) and $K^{+}$ ions (out of the cell) through voltage and time dependent channels.
+
+First, the $Na^{+}$  gates are open which results in a potential spike due to the active transport of ions propagating within the myocyte (phase $0$). The intracellular potential in this phase goes from $ -75  mV$ to $+55 mV $~\cite{cardiacphys_ap2009} . 
+ 
+Then, the $Na^{+}$ gate closes and, after a short repolarisation period (phase $1$), the $Ca_{2}^{+}$ ions gates open causing a smaller spike in potential (phase $2$). Finally the $K^{+}$ ions leave the cell repolarising the myocyte to negative potential (phase 3).
+
+This process causes the propagation of a short electrical impulse ($\approx 0.2s$) called the action potential (AP) which propagates through the myocytes. Once the cell has been excited, the enzyme Na/K-ATPase restores the original concentration gradients (phase $4$). For a more accurate analysis also other currents should be taken into account, even though their impact on the AP is negligible and difficult to model. After the excitation in phase $0$, the myocyte can't be excited again until phase 4 during a period of time called refractory period. The impulse propagates through junctions in the cilindrically shaped myocytes, which are arranged in bundles (fibres). It is worth mentioning that the impulse propagation changes according to the kind of muscle cells it propagates through (figure \ref{APimage}). In the case of fibrosis, myocytes are replaced by tissue that is unable to conduct~\cite{arrhythmia_fibrosis2007}. This condition is particularly relevant to disorders of impulse conduction arrhythmia which are described in the next paragraph. 
+ 
+ \begin{figure}[H]
+\centering
+\includegraphics[width=8cm]{AP_impulse}
+\caption{This is an AP electric signals, where all of the phases from $0$ to $4$ are shown.~\cite{cardiacphys_ap2009} }
+\label{AP_impulse}
+\end{figure}
+
+\subsection{Mechanics of Arrhythmias} 
+ 
+  
+ 
+Cardiac arrhythmias are typically divided into two groups: disorders of impulse formation and disorders impulse conduction arrhythmias (reentry). 
+
+Disorders of impulse formations include irregularities in the formation of the AP, the shape of the AP and irregularities in the chemical concentrations~\cite{arrhythmia_review2012}. The SA node fires electrical impulses with the firing rate depending on the maximum diastolic potential, the threshold potential at which the AP starts and the rate of the repolarisation phase~\cite{cardiacphys_ap2009}. In addition to the SA node, also the Purkinjie fibers and the AV node can fire impulses, but at a lower rate than the SA node (that is why they are called subsidiary pacemakers). When one of the three factors regulating the firing rate of the SA note is altered, the balance between the firing rate of the SA node and the subsidiary pacemakers is broken generating a kind of impulse formation arrhythmia (called altered normal automaticity). 
+
+The normal cardiac functioning can also be disrupted by an alteration in the intracellular or extracellular chemical levels. High extracellular $K^{+}$, low $pH$ and catecholamine excess can cause abnormal impulse shape (abnormal automaticity)~\cite{arrhythmia_review2012}. Abnormal level of $Ca_{2}^{+}$ instead can cause oscillation in the cellular voltage either delaying repolarisation or causing early repolarisation ~\cite{arrhythmia_careview2016}. These voltage anomalies can also lead to disorders of impulse conduction. 
+ 
+ 
+Disorders of impulse conductions are mainly due to irregularities in the structure of the cardiac tissue. We will focus on these kind of disorders because they can be effectively modelled by CA models. The most common disorder of conduction is reentry which occurs when the AP impulse propagates in a self sustaining circuit~\cite{arrhythmia_review2001}.  
+This is caused either by an actual physical obstacle in the cardiac tissue (anatomical reentry) or by the heterogeneities of the myocytes (functional reentry). Reentry occurs only when the impulse is sufficiently delayed in a pathway to allow for expiration of the refractory period of the fibers it propagates through. For this to happen, the length of the circuit (path-length) must exceed or equal that of the wavelength (the product of conduction velocity and refractory period). 
+ 
+Functional reentries can be classified according to the way they are generated. The most studied form of reentry is the circus movement reentry in which the impulse propagates in a loop around a non-conducting area. Another kind of reentry is the figure of eight reentry in which two AP impulses propagate in opposite directions around two blocks and merge into a common pathway (figure \ref{APimage}). The third kind of reentry is reflection reentry in which an impulse propagates through the same pathway back and forth. Reflection reentries happen only in presence of very impaired conduction. 
+
+
+
+\begin{figure}[H]
+\vspace{1cm}
+\hspace{-4cm}
+\centering
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[height=0.78\linewidth]{AP_kinds}
+  \label{AP}
+\end{minipage}%
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[height=.78\linewidth]{reentry}
+  \label{reentry}
+\end{minipage}
+\caption{On the left, the AP propagation in case of arrhythmia and in normal conditions~\cite{arrhythmia_review2012}.On the right,in a) a schematic drawing of a figure of eight reentry, in b) a schematic drawing of a circular reentry~\cite{arrhythmia_figurecircle}.}
+\label{APimage}
+\end{figure}
+
+The last kind of reentries are rotors (called scroll waves if in 3D) in which a wavefront of AP impulses propagates around a point in a circular fashion. This happens because parts of the wavefront propagate with different speed due to anisotropies in the cardiac tissue. Unlike the circus movement reentry, there is no fixed wavelenght in rotors. This is because electrotonic gradients established between cells at the core and cells in the near vicinity shorten the action potentials of cells near the core~\cite{arrhythmia_rotorsreview2013} . Another key difference with the circus movement reentry is that the tissue in the center of the rotor is conducting, which allows rotors to shift to different areas. Recent developments in medical imaging techniques shed light on the dynamics of rotors and their role in AF~\cite{arrhythmia_rotorsreview2013}. In a 2012 study, physiologically guided computational mapping showed the presence of rotors in 96\% of the patients with AF studied~\cite{arrhythmia_rotors2012}. Another study shows that, during AF, many small rotors are generated with most of them located near the pulmonary vein~\cite{arrhythmia_pulmonaryvein1998}, even though other studies also suggests that rotors can be generated elsewhere~\cite{arrhythmia_venacava2000}. 
+
+\subsection{ Current Treatments }
+
+
+A cure for atrial fibrillation is a major goal in cardiac electrophysiology. Current treatments can be divided into three categories: rhythm control, rate control and ablation procedures~\cite{article_aftreatments}. 
+
+Rhythm control and rate control mainly involve the use of drugs to keep the heart rate regular by affecting the chemical concentrations of ions and the blood coagulation. Both these strategies have a plethora of side effects and their success rate is heavily dependent on the condition of the patient. 
+
+Ablation procedures instead are surgical procedures acting on the area of the heart affected by AF. Among these, radio frequency cathered ablation (RFCA) has proved to be effective with a success rate that can be as high as 80\% in patients affected by AF arising in tissue near the pulmonary vein ~\cite{cardiacphys_raterythmcontrol}. In RFCA, high-frequency, low-voltage radio waves are sent by two electrodes burning the area affected, avoiding therefore the risks of open-heart surgery. Other techniques are evolving to address the challenge of a catheter-based cure for all forms of AF (balloon-based technologies using cryoablation,ultrasound, and laser)~\cite{article_afablation}, but, in order for them to be successful, a better understanding of the mechanisms underlying AF is needed. That is why computational models could be the first step towards a definitive cure for AF. 
+
+
+ 
+ 
+
+\section{ Current research} 
+ 
+\subsection{ Biophysically Accurate Models }
+ 
+Many different models of the impulse propagation in myocytes have been developed in the last 60 years~\cite{physmodel_review}. 
+One of the very first model was the Fitz Hugh Nagumo model (1969) ~\cite{physmodel_fhnrabbit2014} where muscle cells were modelled with an excitability variable and a recovery variable and whose dynamics were governed by simple differential equations.  Then, many other models were created trying to describe more accurately the $Na+$,$Ca2+$ and $K+$ currents. The models can be divided into monodomain models, which consider an isotropic medium, and bidomain models, which instead take into account both the intracellular and extracellular environment~\cite{kim_computationalmodels2001}. 
+
+Other noteworthy models are the Noble-Noble model (1984) describing the behaviour of the SA node and the Ramirez-Nattel-Courtemanche model (2000) describing the behaviour of canine  atrial cells~\cite{physmodel_review}. These models are quite convoluted, involving the use of many variables. 
+
+Another step forward was done first with the Karma model (1993), and then with the Fenton-Karma model (1998) where the ion currents were modelled as fast currents and slow currents ~\cite{physmodel_review}.
+
+The Fenton-Karma model has only 3 variables and it is today one of the most used models, showing a certain degree of success in obtaining arrhythmias~\cite{physmodel_fkkktcomparison}. The main shortcoming of all these model is not taking into account anisotropies in the myocardiac tissue. As a result, functional arrhythmia can only be generated in these model by using specific initial conditions. 
+ 
+\subsection{ Cellular Automata Models }
+ 
+In CA models the muscle fiber are modelled by a 2D (or 3D) grid made up by cells linked to each other~\cite{cellauto_weimar1992}. The cells can be in an excited state, a refractory state or an excitable state according to a discrete parameter (the currents of ions are not modelled explicitly).   
+
+The very first attempt of building a CA model of myocytes was made by Moe in 1964, modelling the myocytes as exagons in 2D~\cite{cellauto_review}. The model was then improved by Markus in 1990 who used squares of unit 1 to describe the cells (where the exact position of each cell was a random point in each cell). In the model, a variable $S$ with $0<S<N$ is used to describe the excitation states (being $0$, $N$ the resting end excited state respectively). The neighbours of each cell are the cells within radius one unit from the centre of the cell. If the sum over the neighbours $S$ is greater than a specific value, the cell is excited.  In another paper a similar version of this model was used to show that waves propagating with a certain curvature can generate arrhythmias and rotors ~\cite{cellauto_curvature1990}. 
+
+Another noteworthy model is the Weimar model (1992)\cite{cellauto_review} which modifies the neighbours rule giving more excitation weight to the closer cells. In spite of the ability to show some form of arrhythmia, these models are not very computationally efficient. 
+A further step was made in 2005 in the paper "A Probabilistic Model of Cardiac Electrical Activity Based on a Cellular Automata System"~\cite{cellauto_model2005}. This model shares many features with the Markus model except that, for the first time, the depolarisation of the cell membrane was modelled as a probabilistic phenomenon. 
+
+Then, in the publication "Simple Model for Identifying Critical Regions in Atrial Fibrillation"~\cite{kim2015} an even simpler model was produced. The cells were arranged in a squared grid with horizontal connections, with a percentage of transversal connections (to reproduce the effect of heterogeneities) and a percentage of unexcitable cells. Another key difference with the previous models is that each cell becomes excited the moment one of its four neighbours is excited. The results from this model show that there is a threshold value of vertical connections beyond which AF is produced spontaneously (without changing refractory period or conduction speed). This matches real data according to which AF is correlated with structural heterogeneities~\cite{arrhythmia_fibrosis2007}. 
+The model also shows that burning the area affected by AF effectively stops the arrhythmia, which has been recently discovered to be the case ~\cite{article_kimpaper}. 
+
+All the models described up to now are 2D models and 3D models haven't really been developed. An attempt was done in 1998~\cite{cellauto_3dmodel}, but the computational resources available were too limited to obtain meaningful results. Another publication from 2015 "Modeling Sources of Atrial Fibrillation on a Triangulated Sphere" shows a cellular automaton modelled on a 2D sphere where the cells were modelled as a simple graph~\cite{cellauto_sphere2015} and where the excitability rules were similar to the ones developed by Weimar. The results show rotors for specific values of the refractory period and the conduction speed. 
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[height=0.73\linewidth]{rotor}
+  \label{rot}
+\end{minipage}%
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[height=.73\linewidth]{rotorkim}
+  \label{rotkim}
+\end{minipage}
+\caption{On the left, the dynamics of a rotor generated in a biophysical model~\cite{arrhythmia_rotorsreview2013}. On the right, the dynamics of a rotor spontaneously arising in a CA model~\cite{kim2015}.}
+\label{rotor}
+\end{figure}
+ 
+\section{Possible Developments} 
+ 
+Even though models that simulate AF have been reproduced, the mechanisms underlying AF are still obscure. The role of $Ca_{2}^{+}$ in the AP is not completely understood and fibrillation doesn't spontaneously arise in the current biophysically accurate models available~\cite{arrhythmia_ca2016}\cite{arrhythmia_careview2016}. As for CA models, improvements and further testing are necessary.
+
+A few ideas can be used to test the efficiency of CA models. Optical imaging techniques have shown a correlation between rotor frequency and action potential shortening~\cite{physmodel_rotorspeed2015}. By comparing the data from the model with real data, the accuracy of a CA model can be tested. 
+
+In addition, in a very recent publication~\cite{physmodel_heterogeneities2015} the effect of patches with different refractory period was observed and analysed in a biophysical model. The same can be done in a CA model by modelling patches of tissue heterogeineties and a comparison can be made. Third, in another publication~\cite{arrhythmia_rotorsreview2013} a scaling relation between ventricular fibrillation frequency and body mass index was found. Finding a similar scaling relation in a CA model will give further credit to the validity of the model. Another further research development could be mimicking the effects of different anti-arrhythmic drugs in CA model and  compare the results with real data. Finally, the construction and implementation of a functioning 3D CA model could be carried out.
+ 
+ 
+ \newpage
+ 
+
+
+\section{Bibliography}
+
+\bibliographystyle{ieeetr}
+\bibliography{Bibliography}
+\end{document}
