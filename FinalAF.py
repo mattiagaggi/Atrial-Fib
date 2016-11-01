@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.75,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.87,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -39,6 +39,9 @@ class heart:
         self.gridofexcite = copy.deepcopy(self.grid)
         
         
+        self.electrocardiovertpos=np.zeros((self.L,self.L))
+        self.electrocardiohorizpos=np.zeros((self.L,self.L))
+        self.volt=0
                                         #list of edges True or False for every element self.grid[a,b] the element self.edges[a][b] is the edge below the elements
 
         self.time=0
@@ -49,7 +52,7 @@ class heart:
         n_dysf = (int(self.p_dysf*(self.L**2)))
         cellsdysf=np.random.choice(range(self.L**2),n_dysf,False)
 	for elements in cellsdysf:
-	   self.dysfgrid[int(elements/self.L),elements%self.L]=1
+	   self.dysfgrid[int(float(elements)/self.L),elements%self.L]=1
 		
 		
 	
@@ -57,7 +60,7 @@ class heart:
         n_fibrosis = (int(self.p_fibrosis*(self.L**2)))
 	fibr=np.random.choice(range(self.L**2),n_fibrosis,False)
 	for elements in fibr:
-		self.edgegrid[int(elements/self.L),elements%self.L]=0
+		self.edgegrid[int(float(elements)/self.L),elements%self.L]=0
        
       
     def reinitialise(self):
@@ -158,16 +161,35 @@ class heart:
         
         return randgrid
     
-    def Volt(self,grid):
+    def Volt(self):
         
-        return 20-((110./self.excitation)*(self.excitation-grid))
+        self.volt= 20-((110./self.excitation)*(self.excitation-self.grid))
         
-        
-    def electrocardio(self,function,plot=False):
-        
-        centre= int(self.L/2.)
-        return  np.sum((self.grid*function - self.grid[centre,centre]))    
     
+        
+        
+    def electrocardiosetup(self,position):
+        
+        gridoforizpositions=np.zeros((self.L,self.L))
+        gridoforizpositions=(gridoforizpositions+1)*(np.array([range(200)]))
+        gridoforizpositions=gridoforizpositions-position[0]
+        
+        gridofvertpositions=np.zeros((self.L,self.L))
+        gridofvertpositions=(gridofvertpositions+1)*(np.transpose(np.array([range(200)])))
+        gridofvertpositions=gridofvertpositions-position[1]
+        
+        self.electrocardiohorizpos=gridoforizpositions
+        self.electrocardiovertpos=gridofvertpositions
+        
+        
+    def electrocardio(self):
+        self.Volt()
+        z=3
+        voltxminus1= np.roll(self.volt,1,axis=1)
+        voltxminus1[:,0]=0
+        voltyminus1= np.roll(self.volt,1,axis=0)
+        
+        return np.sum ( (self.electrocardiohorizpos *( self.volt-voltxminus1)+self.electrocardiovertpos *(self.volt-voltyminus1))/ ((self.electrocardiovertpos**2 +self.electrocardiohorizpos**2+z**2)**(3./2) ) )
 
 class run: #Class to run code
     def __init__(self,heart,plot=True,store=True,stepsstored=10000,replot=False):
@@ -179,24 +201,34 @@ class run: #Class to run code
         self.replot=replot
         self.gridintime=[]
         self.stepsstored=stepsstored
-        self.electrocardio=[]
-        
-        self.associatedV=np.zeros((self.heart.L,self.heart.L))
+        self.electrocardiot=[]
         
         
         
-        self.electrocardio.append(0)
-        array=np.arange(0,1,1.*2/self.heart.L)
-        array=np.append(array,array[::-1])
-        array=np.matrix(array)
+        self.electrocardiot.append(0)
+       
+        self.tstartfib=200
+        self.tstopfib=210
+        self.timecheck=-120 # I set this to be negative so it doesn't fucked up the first time grid[100,100] is excited
         
         
-        self.electrocardiof=np.array(self.electrocardiof)
-        self.fibthreshold=150000
-        self.tstopfib=300
         self.infibrillation=False
         self.tfibrillation=[]
         self.fibrillationcounter=[]
+        self.figure=plt.figure()
+        gs = gridspec.GridSpec(2, 1, height_ratios=[5, 1]) 
+        self.ax1 = plt.subplot(gs[0], axisbg='black')
+        
+            
+        self.ax1.set_title('Lattice')
+        self.ax1.set_xlabel('x')
+        self.ax1.set_ylabel('y')
+            
+        self.ax2 = plt.subplot(gs[1],axisbg='black' )
+        self.ax2.set_xlim(0,200)
+        self.ax2.set_ylim(-50,50)
+           
+        
         
         
         if self.plot==False and self.replot==False and self.store==True:
@@ -208,19 +240,6 @@ class run: #Class to run code
         
         if self.plot or self.replot:
             
-            self.figure=plt.figure()
-            gs = gridspec.GridSpec(2, 1, height_ratios=[5, 1]) 
-            self.ax1 = plt.subplot(gs[0], axisbg='black')
-
-            
-            
-            self.ax1.set_title('Lattice')
-            self.ax1.set_xlabel('x')
-            self.ax1.set_ylabel('y')
-            
-            self.ax2 = plt.subplot(gs[1],axisbg='black' )
-            self.ax2.set_xlim(0,200)
-            self.ax2.set_ylim(-100000000,10000000)
            
             
             
@@ -228,7 +247,7 @@ class run: #Class to run code
             self.heart.excitecolumn()
             self.im = self.ax1.imshow(self.heart.grid, extent=(-0,heart.L, heart.L, 0), aspect = 'auto', cmap = "Greys_r")
             self.im.set_cmap('Greys_r') 
-            self.im2, = self.ax2.plot(self.heart.tcounter,self.electrocardio, color='white' )
+            self.im2, = self.ax2.plot(self.heart.tcounter,self.electrocardiot, color='white' )
             
             
             self.interval=1 
@@ -276,9 +295,9 @@ class run: #Class to run code
             self.gridintime.append(self.heart.grid)
             self.heart.onestep()
             
-        self.electrocardio.append(self.heart.electrocardio(self.electrocardiof))
+        #self.electrocardiot.append(self.heart.electrocardio())
         
-        self.im2.set_data(self.heart.tcounter,self.electrocardio)
+        self.im2.set_data(self.heart.tcounter,self.electrocardiot)
         if len(self.heart.tcounter)>200:
             self.im2.axes.set_xlim(self.heart.tcounter[-200],self.heart.tcounter[-1])
         
@@ -301,30 +320,60 @@ class run: #Class to run code
             if (self.heart.time % self.heart.heartbeatsteps)==0 and self.heart.time!=0:    
                 self.heart.excitecolumn()
             self.heart.onestep()
-            self.electrocardio.append(self.heart.electrocardio(self.electrocardiof))
-            if self.electrocardio[-1]>self.fibthreshold:
-                self.fibrillation()
+            #self.electrocardiot.append(self.heart.electrocardio())
+            
+        
+            """
+            Tig so the way the fibrillation works is:
                 
+                -at each time steps it checks if the cell in the centre of the grid is excited
+                -if it is, then it checks if the time difference between that moment and the moment when it was excited proviously is smaller than a threshold tstartfib
+                -if it is smaller it enters the fibrillation
+                -if instead it is already in fibrillation and the difference is larger than the threshold tstopfib, it stops the fibrillation
+                
+                problem:
+                    
+                it fucks up if the centre of the grid is dysfunctional and I am not sure it is a good method.
+                the advantage is that this method doesn't operate on the ECG which takes 47s for 10**4.
+                without ECG it takes only 24s
+                
+            
+            
+            """
+            
+            if self.heart.grid[100,100]==self.heart.excitation:
+                if self.heart.time-self.timecheck< self.tstartfib:
+                    self.fibrillation()
+                else:
+                    self.stopfibrillation()
+                self.timecheck=self.heart.time
+    
             self.gridintime.append(self.heart.grid)
 
     def fibrillation(self):
+        
         if self.infibrillation==False:
             self.tfibrillation.append([self.heart.time])
             self.infibrillation=True
-        else:
-            self.fibrillationcounter.append(self.heart.time)
-            if len(self.fibrillationcounter)>2:
-                if self.fibrillationcounter[-1]-self.fibrillationcounter[-2] >self.tstopfib:
-                    self.tfibrillation[-1].append(self.heart.time)
-                    self.infibrillation=False
+    
+    def stopfibrillation(self):
+            
+
+        if self.infibrillation==True:
+            self.tfibrillation[-1].append(self.heart.time)
+            self.infibrillation=False
         
+    
+    
+    
+    
     def timeinfibrillation(self):
         timeinfibrillation=0
         for elements in self.tfibrillation:
             if len(elements)==2:
                 timeinfibrillation+=elements[1]-elements[0]
             elif len(elements)==1:
-                timeinfibrillation=self.heart.time-elements[0]
+                timeinfibrillation+=self.heart.time-elements[0]
                 
                 
         return timeinfibrillation
@@ -333,5 +382,5 @@ class run: #Class to run code
 plt.show()
     
 
-#h = FinalAF.heart()
-#r = FinalAF.run(heart=h, plot=False,store=True,stepsstored=10000,replot=False)
+h = heart()
+#r = run(heart=h, plot=True,store=True,stepsstored=10000,replot=False)
