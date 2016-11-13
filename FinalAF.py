@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.8,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0.8,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -50,12 +50,7 @@ class heart:
         #self.edgegrid = np.zeros((self.L, self.L)) + 1
         
         
-        """
-        n_dysf = (int(self.p_dysf*(self.L**2)))
-        cellsdysf=np.random.choice(range(self.L**2),n_dysf,False)
-        for elements in cellsdysf:
-            self.dysfgrid[int(float(elements)/self.L),elements%self.L]=1
-        """
+       
 
         self.dysfgrid = np.random.rand(self.L, self.L)    #grid of random numbers 
         self.dysfgrid[self.dysfgrid < self.p_dysf] = 1
@@ -87,14 +82,7 @@ class heart:
         self.edgegrid = np.random.rand(self.L, self.L) #grid of random numbers 
         self.edgegrid[self.edgegrid > self.p_fibrosis] = 1
         self.edgegrid[self.edgegrid != 1] = 0
-        """
-        self.dysfgrid=self.dysfgrid.flatten()
-        np.random.shuffle(self.dysfgrid)
-        self.dysfgrid=self.dysfgrid.reshape((self.L,self.L))
-        self.edgegrid=self.edgegrid.flatten()
-        np.random.shuffle(self.edgegrid)
-        self.edgegrid=self.edgegrid.reshape((self.L,self.L))
-        """
+       
     
     
     def excite(self,a,b): #excitation wavefront
@@ -149,24 +137,24 @@ class heart:
         
         return exciteleft   
     
-    def exciteup(self):
-        
-        exciteup = np.roll(self.gridofexcite, 1, axis=0)
-        exciteup = (self.grid + exciteup)         
-        exciteup[exciteup != self.excitation] = 0   
-        exciteup = exciteup*np.roll(self.edgegrid, -1, axis = 0) 
-        #exciteup[exciteup != self.excitation] = 0 #only gets true edges
-        
-        return exciteup
-        
     def excitedown(self):
         
-        excitedown = np.roll(self.gridofexcite, -1, axis=0) #rolling down
-        excitedown = (self.grid + excitedown)             
-        excitedown[excitedown != self.excitation] = 0 
-        excitedown = excitedown*self.edgegrid
-    
+        excitedown = np.roll(self.gridofexcite, 1, axis=0)
+        excitedown = (self.grid + excitedown)         
+        excitedown[excitedown != self.excitation] = 0   
+        excitedown = excitedown*  self.edgegrid
+        #exciteup[exciteup != self.excitation] = 0 #only gets true edges
+        
         return excitedown
+        
+    def exciteup(self):
+        
+        exciteup = np.roll(self.gridofexcite, -1, axis=0) #rolling down
+        exciteup = (self.grid + exciteup)             
+        exciteup[exciteup != self.excitation] = 0 
+        exciteup = exciteup*np.roll(self.edgegrid, -1, axis = 0)
+    
+        return exciteup
         
     def dysfcheck(self):
         
