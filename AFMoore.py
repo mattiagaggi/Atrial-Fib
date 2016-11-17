@@ -34,7 +34,7 @@ class heart:
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
         self.p_unexcitable=p_unexcitable #Probablility of a dysfunctional cell being unexcitable
         self.excitation=50 #Value of excitation on the lattice
-        self.totalexcitation=49
+        self.totalexcitation=149
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
@@ -106,7 +106,7 @@ class heart:
         self.tcounter.append(self.time)
         
         self.gridofexcite = self.exciteright() + self.exciteleft() + self.exciteup() + self.excitedown() #replaces the list of old excited cells  with the list of newly excited cells
-        print self.gridofexcite
+        #print self.gridofexcite
         self.gridofexcite[self.gridofexcite > self.totalexcitation] = self.excitation #making repeated cells = self.excitation
         self.gridofexcite[self.gridofexcite!=self.excitation]=0
         self.gridofexcite=(self.gridofexcite*(self.grid==0))
@@ -126,7 +126,7 @@ class heart:
         
     def exciteright(self):
         
-        exciteright = np.roll(self.grid, 1, axis=1) #rolling right
+        exciteright = np.roll(self.gridofexcite, 1, axis=1) #rolling right
         exciteright[:,0] = 0
      #removing refractory cells that would have been excited
         
@@ -134,7 +134,7 @@ class heart:
     
     def exciteleft(self):
 
-        exciteleft = np.roll(self.grid, -1, axis=1) #rolling left
+        exciteleft = np.roll(self.gridofexcite, -1, axis=1) #rolling left
         exciteleft[:,self.L-1] = 0
 
         
@@ -142,7 +142,7 @@ class heart:
     
     def excitedown(self):
         
-        excitedown = np.roll(self.grid, 1, axis=0)
+        excitedown = np.roll(self.gridofexcite, 1, axis=0)
                 
         excitedown = excitedown*  self.edgegrid
         #exciteup[exciteup != self.excitation] = 0 #only gets true edges
@@ -151,7 +151,7 @@ class heart:
         
     def exciteup(self):
         
-        exciteup = np.roll(self.grid, -1, axis=0) #rolling down     
+        exciteup = np.roll(self.gridofexcite, -1, axis=0) #rolling down     
         exciteup = exciteup*np.roll(self.edgegrid, -1, axis = 0)
     
         return exciteup

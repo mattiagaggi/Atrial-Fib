@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.89,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -180,11 +180,11 @@ class heart:
     def electrocardiosetup(self,position):
         
         gridoforizpositions=np.zeros((self.L,self.L))
-        gridoforizpositions=(gridoforizpositions+1)*(np.array([range(200)]))
+        gridoforizpositions=(gridoforizpositions+1)*(np.array([range(self.L)]))
         gridoforizpositions=gridoforizpositions-position[0]
         
         gridofvertpositions=np.zeros((self.L,self.L))
-        gridofvertpositions=(gridofvertpositions+1)*(np.transpose(np.array([range(200)])))
+        gridofvertpositions=(gridofvertpositions+1)*(np.transpose(np.array([range(self.L)])))
         gridofvertpositions=gridofvertpositions-position[1]
         
         self.electrocardiohorizpos=gridoforizpositions
