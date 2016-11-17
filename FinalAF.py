@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0.8,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -33,7 +33,7 @@ class heart:
         self.p_dysf=p_dysf #The fraction of a dysfunctional cells 
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
         self.p_unexcitable=p_unexcitable #Probablility of a dysfunctional cell being unexcitable
-        self.excitation=50 #Value of excitation on the lattice
+        self.excitation=51 #Value of excitation on the lattice
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
@@ -66,8 +66,12 @@ class heart:
         for elements in fibr:
             self.edgegrid[int(float(elements)/self.L),elements%self.L]=0
         """
-       
-      
+    def zero(self):
+        
+        self.time=0
+        self.tcounter=[0]
+        self.grid = np.zeros((self.L,self.L))
+        self.gridofexcite = copy.deepcopy(self.grid)
     def reinitialise(self):
         
         self.time=0
@@ -260,7 +264,7 @@ class run: #Class to run code
             self.counter=0
             if self.replot==False:
                 self.anim1 = animation.FuncAnimation(self.figure, self.updatefig,
-                            frames=10000, interval=self.interval, blit=True)
+                            frames=10000, interval=self.interval, blit=False)
             
             if self.store==True:
                 #gridintime.append(self.heart.grid) 
@@ -272,7 +276,7 @@ class run: #Class to run code
                 
                 
                 self.anim1 = animation.FuncAnimation(self.figure, self.replotfigure,
-                            frames=10000, interval=self.interval, blit=True) 
+                            frames=10000, interval=self.interval, blit=False) 
                 
         self.timeb=time.time()
         

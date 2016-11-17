@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0.8,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.5,p_fibrosis= 0.45,p_dysf=0.05):
 
         """#########################PLAN######################
         
