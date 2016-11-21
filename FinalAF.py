@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.89,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.8,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -32,9 +32,9 @@ class heart:
         self.L=L #Is this the lattice extent (eg length of grid on one axis?) If so, then the grid or edge indices aren't L*L
         self.p_dysf=p_dysf #The fraction of a dysfunctional cells 
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
-        self.p_unexcitable=p_unexcitable #Probablility of a dysfunctional cell being unexcitable
+        self.p_unexcitable=p_unexcitable #Proablility of a dysfunctional cell being unexcitable
         self.excitation=51 #Value of excitation on the lattice
-        self.heartbeatsteps=220 #Time period between excitation wavefronts
+        self.heartbeatsteps=190 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
         
@@ -331,7 +331,7 @@ class run: #Class to run code
             if (self.heart.time % self.heart.heartbeatsteps)==0 and self.heart.time!=0:    
                 self.heart.excitecolumn()
             self.heart.onestep()
-            #self.electrocardiot.append(self.heart.electrocardio())
+            self.electrocardiot.append(self.heart.electrocardio())
             self.num_excited.append(len(self.heart.grid[self.heart.grid == self.heart.excitation]))
             
 
@@ -386,11 +386,11 @@ class run: #Class to run code
     def plotecg(self):
         fig3=plt.figure()
         ax = fig3.add_subplot(111)
-        plt.plot(self.heart.tcounter,self.num_excited)
+        plt.plot(self.heart.tcounter,self.electrocardiot)
         #plt.ylim(-60,60)
-        #ax.text(0.1, 0.98,'p_fibros %r' %(self.heart.p_fibrosis), ha='center', va='center',transform=ax.transAxes)
-        #ax.text(0.1, 0.94,'p_unex %r' %(self.heart.p_unexcitable), ha='center', va='center',transform=ax.transAxes)
-        #ax.text(0.1, 0.9,'p_dysf %r' %(self.heart.p_dysf), ha='center', va='center',transform=ax.transAxes)
+        ax.text(0.1, 0.98,'p_fibros %r' %(self.heart.p_fibrosis), ha='center', va='center',transform=ax.transAxes)
+        ax.text(0.1, 0.94,'p_unex %r' %(self.heart.p_unexcitable), ha='center', va='center',transform=ax.transAxes)
+        ax.text(0.1, 0.9,'p_dysf %r' %(self.heart.p_dysf), ha='center', va='center',transform=ax.transAxes)
         plt.xlabel("time steps")
         plt.ylabel("Voltage")
 
