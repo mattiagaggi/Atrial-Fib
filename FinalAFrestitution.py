@@ -29,6 +29,7 @@ class heart:
     
 
 	"""
+	
         self.L=L #Is this the lattice extent (eg length of grid on one axis?) If so, then the grid or edge indices aren't L*L
         self.p_dysf=p_dysf #The fraction of a dysfunctional cells 
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
@@ -37,7 +38,7 @@ class heart:
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
-        
+        self.gridlast=np.zeros((self.L,self.L))
         
         self.electrocardiovertpos=np.zeros((self.L,self.L))
         self.electrocardiohorizpos=np.zeros((self.L,self.L))
@@ -94,6 +95,7 @@ class heart:
         
         self.gridofexcite[a,b] = self.excitation
         self.grid[a,b] = self.excitation
+        self.gridlast[a,b]=0
         
         
         
@@ -101,17 +103,24 @@ class heart:
     def excitecolumn(self):
         self.gridofexcite[:,0] = self.excitation
         self.grid[:,0] = self.excitation
+        self.gridlast[:,0]=0
 
         
     def onestep(self): #Propagating to the next time step
         
         self.time+=1
+        
+        
+        
         self.tcounter.append(self.time)
         self.repolarisation()
         self.gridofexcite = self.exciteright() + self.exciteleft() + self.exciteup() + self.excitedown() #replaces the list of old excited cells  with the list of newly excited cells
         self.gridofexcite[self.gridofexcite > self.excitation] = self.excitation #making repeated cells = self.excitation
         self.gridofexcite = self.gridofexcite-self.dysfcheck() #getting rid of dysfunctional cells that aren't excited
         
+        
+        
+       
         self.grid = self.grid + self.gridofexcite # updates the new excited cells on the list of refractory cells
         
       
