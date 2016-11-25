@@ -17,7 +17,7 @@ def decision(probability):
 gridintime=[] #List for storage of the grid
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.8,p_dysf=0.05):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.83,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -33,7 +33,7 @@ class heart:
         self.p_dysf=p_dysf #The fraction of a dysfunctional cells 
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
         self.p_unexcitable=p_unexcitable #Proablility of a dysfunctional cell being unexcitable
-        self.excitation=51 #Value of excitation on the lattice
+        self.excitation=50 #Value of excitation on the lattice
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
@@ -107,11 +107,12 @@ class heart:
         
         self.time+=1
         self.tcounter.append(self.time)
-        self.repolarisation()
+        
         self.gridofexcite = self.exciteright() + self.exciteleft() + self.exciteup() + self.excitedown() #replaces the list of old excited cells  with the list of newly excited cells
         self.gridofexcite[self.gridofexcite > self.excitation] = self.excitation #making repeated cells = self.excitation
         self.gridofexcite = self.gridofexcite-self.dysfcheck() #getting rid of dysfunctional cells that aren't excited
-        
+        self.gridofexcite= self.gridofexcite* (self.grid==0)
+        self.repolarisation()
         self.grid = self.grid + self.gridofexcite # updates the new excited cells on the list of refractory cells
         
       
