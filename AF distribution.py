@@ -38,15 +38,20 @@ class heart:
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
-        self.delayprop = copy.deepcopy(self.grid)
+ 
         self.tempgrid = copy.deepcopy(self.grid)
-      
+        self.tempgrid+=220
         
         self.electrocardiovertpos=np.zeros((self.L,self.L))
         self.electrocardiohorizpos=np.zeros((self.L,self.L))
         self.volt=0
                                         #list of edges True or False for every element self.grid[a,b] the element self.edges[a][b] is the edge below the elements
 
+       
+        
+        
+        
+        
         self.time=0
         self.tcounter=[0]
         
@@ -64,7 +69,15 @@ class heart:
         self.edgegrid[self.edgegrid != 1] = 0
 
        
-       
+        def function(a):
+            if a>=220:
+                b=self.excitation
+            else:
+                b=self.excitation/2.
+            return b
+        
+        self.map=np.vectorize(function) #this is the way to vectorise a function such that it can act on an array
+                
       
     def reinitialise(self):
         
@@ -88,12 +101,13 @@ class heart:
         
         
         self.grid[a,b] = self.excitation
-        
+        self.gridofexcite[a,b]=1
+        self.tempgrid[a,b]=0
         
         
     
     def excitecolumn(self):
-        self.gridofexcite[:,0] = self.excitation
+        self.gridofexcite[:,0] = 1
         self.grid[:,0] = self.excitation
         
 
@@ -110,19 +124,28 @@ class heart:
         """
         
         self.time+=1
+        self.tempgrid+=1
         self.tcounter.append(self.time)
-        self.tempgrid[:,:]=False  # creates a temporary grid with all False
+         # creates a temporary grid with all False
+        
         self.gridofexcite = self.exciteright() + self.exciteleft() + self.exciteup() + self.excitedown()
-        self.tempgrid[self.gridofexcite==4*self.excitation]=True
-        self.tempgrid[self.gridofexcite==3*self.excitation]=True #changes to true all the elements of the tempgrid that have 3 or 4 neightbours excited
-        self.tempgrid= self.tempgrid*(self.grid<35) #the results of this operation leaves as "True" in the temp grid all of the elements that correspond to an element smaller then a certain threshold. All the others are turned to False.
-        self.grid[self.tempgrid==True]=0 # sets to zero all the elements of the grid which are true in temp grid. This means all the elements having 3 or four excited neighbours and refractory period smaller than 35
-        self.gridofexcite[self.gridofexcite>self.excitation]=self.excitation
+       
+                                                #changes to true all the elements of the tempgrid that have 3 or 4 neightbours excited
+                                            #the results of this operation leaves as "True" in the temp grid all of the elements that correspond to an element smaller then a certain threshold. All the others are turned to False.
+        
+        
+        
+        # sets to zero all the elements of the grid which are true in temp grid. This means all the elements having 3 or four excited neighbours and refractory period smaller than 35
+        self.gridofexcite[self.gridofexcite>1]=1
         self.gridofexcite = self.gridofexcite-self.dysfcheck() #getting rid of dysfunctional cells that aren't excited
+        
         self.gridofexcite=(self.gridofexcite*(self.grid==0))
+        
+        
         self.repolarisation()
-        self.grid = self.grid + self.gridofexcite # updates the new excited cells on the list of refractory cells
-
+        
+        self.grid = self.grid + self.gridofexcite*self.map(self.tempgrid) # updates the new excited cells on the list of refractory cells
+        self.tempgrid=self.tempgrid*(self.gridofexcite==0)
       
         
       
@@ -135,35 +158,7 @@ class heart:
         self.grid[self.grid==-1] = 0
 
 
-    def exciteleftdown(self):
 
-        exciteleftdown = np.roll(self.gridofexcite, -1, axis=1) #rolling left
-        exciteleftdown = np.roll(exciteleftdown, 1, axis=0)
-        exciteleftdown[:,self.L-1] = 0
-   
-        return exciteleftdown 
-        
-    def exciterightdown(self):
-        
-        exciterightdown = np.roll(self.gridofexcite, 1, axis=1) #rolling right
-        exciterightdown = np.roll(exciterightdown, 1, axis=0)
-        exciterightdown[:,0] = 0
-
-        return exciterightdown
-
-    def exciteleftup(self):
-
-        exciteleftup = np.roll(self.gridofexcite, -1, axis=1) #rolling left
-        exciteleftup = np.roll(exciteleftup, -1, axis=0)
-        exciteleftup[:,self.L-1] = 0
-        return exciteleftup 
-        
-    def exciterightup(self):
-        
-        exciterightup = np.roll(self.gridofexcite, 1, axis=1) #rolling right
-        exciterightup = np.roll( exciterightup, -1, axis=0)
-        exciterightup[:,0] = 0
-        return exciterightup
 
     def exciteright(self):
         
@@ -237,7 +232,7 @@ class heart:
         return np.sum ( (self.electrocardiohorizpos *( self.volt-voltxminus1)+self.electrocardiovertpos *(self.volt-voltyminus1))/ ((self.electrocardiovertpos**2 +self.electrocardiohorizpos**2+z**2)**(3./2) ) )
 
 class run: #Class to run code
-    def __init__(self,heart,plot=False,store=True,stepsstored=10000,replot=False):
+    def __init__(self,heart,plot=False,store=True,stepsstored=1000,replot=False):
         
         self.heart=heart
         self.timea=time.time()
@@ -300,7 +295,7 @@ class run: #Class to run code
             self.counter=0
             if self.replot==False:
                 self.anim1 = animation.FuncAnimation(self.figure, self.updatefig,
-                            frames=5000, interval=self.interval, blit=True)
+                            frames=5000, interval=self.interval, blit=False)
             
             if self.store==True:
                 #gridintime.append(self.heart.grid) 
@@ -423,9 +418,9 @@ class run: #Class to run code
 plt.show()
     
 """
-h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
-h.electrocardiosetup([100,100])
-r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
+#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
+#h.electrocardiosetup([100,100])
+#r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
 #r.anim1.save('AFnu09Exthresh3.mp4', fps=30, extra_args=['-vcodec', 'libx264'])

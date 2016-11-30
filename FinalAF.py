@@ -203,7 +203,7 @@ class heart:
         return np.sum ( (self.electrocardiohorizpos *( self.volt-voltxminus1)+self.electrocardiovertpos *(self.volt-voltyminus1))/ ((self.electrocardiovertpos**2 +self.electrocardiohorizpos**2+z**2)**(3./2) ) )
 
 class run: #Class to run code
-    def __init__(self,heart,plot=False,store=True,stepsstored=10000,replot=False):
+    def __init__(self,heart,plot=False,store=True,stepsstored=1000,replot=False):
         
         self.heart=heart
         self.timea=time.time()
