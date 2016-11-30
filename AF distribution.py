@@ -13,7 +13,8 @@ import math
 import copy
 def decision(probability):
     return random.random() < probability
-
+def map(array,a):
+    return array[a]
 gridintime=[] #List for storage of the grid
 
 class heart:
@@ -41,6 +42,7 @@ class heart:
  
         self.tempgrid = copy.deepcopy(self.grid)
         self.tempgrid+=220
+        self.refr=copy.deepcopy(self.grid)
         
         self.electrocardiovertpos=np.zeros((self.L,self.L))
         self.electrocardiohorizpos=np.zeros((self.L,self.L))
@@ -67,17 +69,16 @@ class heart:
         self.edgegrid = np.random.rand(self.L, self.L) #grid of random numbers 
         self.edgegrid[self.edgegrid < self.p_fibrosis] = 1
         self.edgegrid[self.edgegrid != 1] = 0
-
-       
-        def function(a):
-            if a>=220:
-                b=self.excitation
-            else:
-                b=self.excitation/2.
-            return b
         
-        self.map=np.vectorize(function) #this is the way to vectorise a function such that it can act on an array
-                
+        
+        self.maparray=[]
+        for i in range(220):
+            self.maparray.append(25)
+        for i in range(40000):
+            self.maparray.append(50)
+        self.maparray=np.array(  self.maparray)
+       
+        
       
     def reinitialise(self):
         
@@ -144,7 +145,11 @@ class heart:
         
         self.repolarisation()
         
-        self.grid = self.grid + self.gridofexcite*self.map(self.tempgrid) # updates the new excited cells on the list of refractory cells
+        self.refr.flatten()
+        self.refr=self.maparray[self.tempgrid.flatten().astype(int)]
+        
+        self.grid = self.grid + self.gridofexcite*self.refr.reshape(self.L,self.L)
+        
         self.tempgrid=self.tempgrid*(self.gridofexcite==0)
       
         
@@ -418,7 +423,7 @@ class run: #Class to run code
 plt.show()
     
 """
-#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
+h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
 #h.electrocardiosetup([100,100])
 #r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
