@@ -13,8 +13,7 @@ import math
 import copy
 def decision(probability):
     return random.random() < probability
-def map(array,a):
-    return array[a]
+
 gridintime=[] #List for storage of the grid
 
 class heart:
