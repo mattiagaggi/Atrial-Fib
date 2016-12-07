@@ -14,7 +14,12 @@ import copy
 def decision(probability):
     return random.random() < probability
 
+
+
+
 gridintime=[] #List for storage of the grid
+
+
 
 class heart:
     def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.2,p_dysf=0.05, excitethresh = 3):
@@ -34,32 +39,24 @@ class heart:
         self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
         self.p_unexcitable=p_unexcitable #Probablility of a dysfunctional cell being unexcitable
         self.excitation=50 #Value of excitation on the lattice
-        
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
- 
         self.tempgrid = copy.deepcopy(self.grid)
+        self.tempgrid = self.tempgrid.flatten()
         self.tempgrid+=220
         self.refr=copy.deepcopy(self.grid)
-        
+        self.refr=self.refr.flatten()
         self.electrocardiovertpos=np.zeros((self.L,self.L))
         self.electrocardiohorizpos=np.zeros((self.L,self.L))
         self.volt=0
                                         #list of edges True or False for every element self.grid[a,b] the element self.edges[a][b] is the edge below the elements
 
-       
-        
-        
-        
-        
+        self.debug=False
+
         self.time=0
         self.tcounter=[0]
         
-        
-        
-       
-
         self.dysfgrid = np.random.rand(self.L, self.L)    #grid of random numbers 
         self.dysfgrid[self.dysfgrid < self.p_dysf] = 1
         self.dysfgrid[self.dysfgrid != 1] = 0
@@ -70,12 +67,31 @@ class heart:
         self.edgegrid[self.edgegrid != 1] = 0
         
         
-        self.maparray=[]
-        for i in range(220):
-            self.maparray.append(25)
-        for i in range(40000):
-            self.maparray.append(50)
-        self.maparray=np.array(  self.maparray)
+        x=np.arange(0,800,3)
+        y=np.array([])
+        for elements in x:
+            if elements<=210:
+                y=np.append(y,90)
+            if elements>210 and  elements<=400:
+                y=np.append(y, ((130./190)*elements+(220-400*130/190)))
+            if elements>400:
+                y=np.append(y,220)
+        z=y*150./220
+  
+        stepsx=x/3
+        stepsx=np.round(stepsx)
+        stepsx=stepsx.astype(int)
+        stepsz=z/3
+        stepsz=np.round(stepsz)
+        while len(stepsz)<1000:
+            
+            stepsz=np.append(stepsz,50)
+        stepsz=stepsz.astype(int)      
+                
+        
+        
+        self.maparray=stepsz
+        
        
         
       
@@ -102,14 +118,20 @@ class heart:
         
         self.grid[a,b] = self.excitation
         self.gridofexcite[a,b]=1
+        self.tempgrid=self.tempgrid.reshape(self.L,self.L)
         self.tempgrid[a,b]=0
+        self.tempgrid=self.tempgrid.flatten()
         
         
     
     def excitecolumn(self):
-        self.gridofexcite[:,0] = 1
-        self.grid[:,0] = self.excitation
         
+        
+        self.grid[:,0] = self.excitation
+        self.gridofexcite[:,0] = 1
+        self.tempgrid=self.tempgrid.reshape(self.L,self.L)
+        self.tempgrid[:,0]=0
+        self.tempgrid=self.tempgrid.flatten()
 
         
     def onestep(self): #Propagating to the next time step
@@ -133,24 +155,30 @@ class heart:
                                                 #changes to true all the elements of the tempgrid that have 3 or 4 neightbours excited
                                             #the results of this operation leaves as "True" in the temp grid all of the elements that correspond to an element smaller then a certain threshold. All the others are turned to False.
         
-        
-        
-        # sets to zero all the elements of the grid which are true in temp grid. This means all the elements having 3 or four excited neighbours and refractory period smaller than 35
+                        # sets to zero all the elements of the grid which are true in temp grid. This means all the elements having 3 or four excited neighbours and refractory period smaller than 35
         self.gridofexcite[self.gridofexcite>1]=1
-        self.gridofexcite = self.gridofexcite-self.dysfcheck() #getting rid of dysfunctional cells that aren't excited
         
+        self.gridofexcite = self.gridofexcite-self.dysfcheck() #getting rid of dysfunctional cells that aren't excited
+
         self.gridofexcite=(self.gridofexcite*(self.grid==0))
         
         
         self.repolarisation()
         
-        self.refr.flatten()
-        self.refr=self.maparray[self.tempgrid.flatten().astype(int)]
+        
+        
+        self.refr=self.maparray[self.tempgrid.astype(int)]
         
         self.grid = self.grid + self.gridofexcite*self.refr.reshape(self.L,self.L)
         
-        self.tempgrid=self.tempgrid*(self.gridofexcite==0)
-      
+        self.tempgrid=self.tempgrid*(self.gridofexcite.flatten()==0)
+        
+        if self.debug==True:
+            
+            print "grid is",self.grid
+            print "escited grid",self.gridofexcite
+            print "times grid",self.tempgrid.reshape(self.L,self.L)
+            print "refr grid is",self.refr.reshape(self.L,self.L)
         
       
         
@@ -424,7 +452,7 @@ plt.show()
 """
 h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
 #h.electrocardiosetup([100,100])
-#r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
+r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
 #r.anim1.save('AFnu09Exthresh3.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
