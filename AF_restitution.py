@@ -83,7 +83,7 @@ class heart:
         stepsx=stepsx.astype(int)
         stepsz=z/3
         stepsz=np.round(stepsz)
-        while len(stepsz)<1000:
+        while len(stepsz)<40000:
             
             stepsz=np.append(stepsz,50)
         stepsz=stepsz.astype(int)      
@@ -387,13 +387,13 @@ class run: #Class to run code
                 self.heart.excitecolumn()
             self.heart.onestep()
             self.electrocardiot.append(self.heart.electrocardio())
-            self.num_excited.append(len(self.heart.grid[self.heart.grid == self.heart.excitation]))
+            self.num_excited.append(len(self.heart.gridofexcite[self.heart.gridofexcite == 1]))
             
 
-            if len(self.heart.grid[self.heart.grid == self.heart.excitation]) > 220:
+            if self.num_excited[-1] > 220:
                 self.fibrillation()
 
-            elif len(self.heart.grid[self.heart.grid==self.heart.excitation]) <= 220 and self.infibrillation == True:
+            elif self.num_excited[-1] <= 220 and self.infibrillation == True:
                 if len(self.num_excited) > 440 and all(i <= 220 for i in self.num_excited[-441:]) :
                     self.stopfibrillation()
 
@@ -450,9 +450,9 @@ class run: #Class to run code
 plt.show()
     
 """
-h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
+#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
 #h.electrocardiosetup([100,100])
-r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
+#r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
 #r.anim1.save('AFnu09Exthresh3.mp4', fps=30, extra_args=['-vcodec', 'libx264'])

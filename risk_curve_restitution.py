@@ -1,4 +1,4 @@
-import AF_distribution
+import AF_restitution
 import numpy as np
 from matplotlib import pyplot as plt
 import pickle
@@ -35,8 +35,8 @@ kishnu = kishmatrix[:,0]
 kishrisk = kishmatrix[:,1]
 kisherror = kishmatrix[:,2]
 p_transversalconn= kishnu #np.arange(0,0.6,0.05) #nu
-time=100000
-number_of_systems=50
+time=10000
+number_of_systems=25
 risk=[]
 riskstd=[]
 t_fib_data = []
@@ -58,12 +58,12 @@ for elements in p_transversalconn:
     af_number = []
     number_fib = []
     #n_fib_real = 0
-    systems=FinalAF.heart(200,0.05,1-elements,0.05)
+    systems=AF_restitution.heart(200,0.05,1-elements,0.05)
     #systems.electrocardiosetup([100,100])
     for i in range(number_of_systems):
         print(i)
         
-        systemsrun=FinalAF.run(systems,False,True,time,False)
+        systemsrun=AF_restitution.run(systems,False,True,time,False)
         timeinfib = systemsrun.timeinfibrillation()
         listoffib = systemsrun.tfibrillation
         n_fib = len(listoffib)
@@ -77,8 +77,7 @@ for elements in p_transversalconn:
             number_fib.append(1)
         else:
             number_fib.append(0)
-        #number_fib.append(n_fib)
-        #n_fib_real += 
+    print "one set of systems done"
     t_in_fib.append(t_fib_temp)
     t_fib_data.append(af_number)
     n_fib_data.append(number_fib)
@@ -107,6 +106,7 @@ plt.errorbar(kishnu, kishrisk, yerr=kisherror, fmt='o')
 plt.legend('Data from Model', 'Kishans Data')
 plt.title('Risk Curve')
 plt.show()   
+
 fileobj7 = open('tinfibdatarightt2.pkl', 'wb')
 fileobj0 = open('tfibdatarightt2.pkl', 'wb')
 fileobj1 = open('riskrcdatarightt2.pkl', 'wb')
@@ -115,6 +115,7 @@ fileobj3 = open('tfibrightt2.pkl', 'wb')
 fileobj4 = open('nfibrightt2.pkl', 'wb')
 fileobj5 = open('nfibavgrightt2.pkl', 'wb')
 fileobj6 = open('nfiberrrightt2.pkl', 'wb')
+
 pickle.dump(t_fib_data, fileobj0, -1)
 pickle.dump(risk, fileobj1, -1)
 pickle.dump(riskstd, fileobj2, -1)
