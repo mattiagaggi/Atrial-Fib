@@ -35,8 +35,8 @@ kishnu = kishmatrix[:,0]
 kishrisk = kishmatrix[:,1]
 kisherror = kishmatrix[:,2]
 p_transversalconn= kishnu #np.arange(0,0.6,0.05) #nu
-time=10000
-number_of_systems=25
+time=100000
+number_of_systems=50
 risk=[]
 riskstd=[]
 t_fib_data = []
@@ -94,27 +94,16 @@ for elements in p_transversalconn:
 
 #nfibavg = 
 risk=np.array(risk)
-from matplotlib import pyplot as plt
-plt.figure()
-plt.xlabel("Percentage transversal Connections/Nu")
-plt.ylabel("Mean time in AF/Risk of AF")
-#plt.plot(p_transversalconn,risk, 'bo')
-plt.errorbar(p_transversalconn,risk, yerr=riskstd, fmt='o')
-#plt.errorbar(p_transversalconn,n_fib_avg, yerr=n_fib_err, fmt='o')
-#plt.plot(kishnu, kishrisk, 'ro')
-plt.errorbar(kishnu, kishrisk, yerr=kisherror, fmt='o')
-plt.legend('Data from Model', 'Kishans Data')
-plt.title('Risk Curve')
-plt.show()   
 
-fileobj7 = open('tinfibdatarightt2.pkl', 'wb')
-fileobj0 = open('tfibdatarightt2.pkl', 'wb')
-fileobj1 = open('riskrcdatarightt2.pkl', 'wb')
-fileobj2 = open('riskerrorrcdatarightt2.pkl', 'wb')
-fileobj3 = open('tfibrightt2.pkl', 'wb')
-fileobj4 = open('nfibrightt2.pkl', 'wb')
-fileobj5 = open('nfibavgrightt2.pkl', 'wb')
-fileobj6 = open('nfiberrrightt2.pkl', 'wb')
+
+fileobj7 = open('tinfibdata_rest.pkl', 'wb')
+fileobj0 = open('tfibdata_rest.pkl', 'wb')
+fileobj1 = open('riskdata_rest.pkl', 'wb')
+fileobj2 = open('riskerrorrcdata_rest.pkl', 'wb')
+fileobj3 = open('tfibset_rest.pkl', 'wb')
+fileobj4 = open('nfib_rest.pkl', 'wb')
+fileobj5 = open('nfibavrg_rest.pkl', 'wb')
+fileobj6 = open('nfiberr_rest.pkl', 'wb')
 
 pickle.dump(t_fib_data, fileobj0, -1)
 pickle.dump(risk, fileobj1, -1)
@@ -124,6 +113,7 @@ pickle.dump(n_fib_data, fileobj4, -1)
 pickle.dump(n_fib_avg, fileobj5, -1)
 pickle.dump(n_fib_err, fileobj6, -1)
 pickle.dump(t_in_fib, fileobj7, -1)
+
 fileobj1.close()
 fileobj2.close()
 fileobj3.close()
@@ -132,6 +122,19 @@ fileobj0.close()
 fileobj5.close()
 fileobj6.close()
     
+
+
+plt.figure()
+plt.xlabel("Percentage transversal Connections/Nu")
+plt.ylabel("Mean time in AF/Risk of AF")
+#plt.plot(p_transversalconn,risk, 'bo')
+plt.errorbar(p_transversalconn,risk, yerr=riskstd, fmt='o')
+#plt.errorbar(p_transversalconn,n_fib_avg, yerr=n_fib_err, fmt='o')
+#plt.plot(kishnu, kishrisk, 'ro')
+plt.title('Risk Curve')
+plt.show()   
+
+
         
         
         

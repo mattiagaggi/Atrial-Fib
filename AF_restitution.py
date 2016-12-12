@@ -11,6 +11,7 @@ from matplotlib import gridspec
 from itertools import compress
 import math
 import copy
+
 def decision(probability):
     return random.random() < probability
 
@@ -22,7 +23,7 @@ gridintime=[] #List for storage of the grid
 
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.2,p_dysf=0.05, excitethresh = 3):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.7,p_dysf=0.05, excitethresh = 3):
 
         """#########################PLAN######################
         
