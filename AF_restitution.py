@@ -23,7 +23,7 @@ gridintime=[] #List for storage of the grid
 
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.7,p_dysf=0.05, excitethresh = 3):
+    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.75,p_dysf=0.05, excitethresh = 3):
 
         """#########################PLAN######################
         
@@ -105,13 +105,14 @@ class heart:
         self.dysfgrid = np.random.rand(self.L, self.L) #grid of random numbers 
         self.dysfgrid[self.dysfgrid < self.p_dysf] = 1
         self.dysfgrid[self.dysfgrid != 1] = 0
-        
-    
         self.edgegrid = np.random.rand(self.L, self.L) #grid of random numbers 
         self.edgegrid[self.edgegrid > self.p_fibrosis] = 1
         self.edgegrid[self.edgegrid != 1] = 0
-       
-    
+        self.tempgrid = copy.deepcopy(self.grid)
+        self.tempgrid = self.tempgrid.flatten()
+        self.tempgrid+=220
+        self.refr=copy.deepcopy(self.grid)
+        self.refr=self.refr.flatten()
     
     def excite(self,a,b): #excitation wavefront
         
@@ -451,8 +452,8 @@ class run: #Class to run code
 plt.show()
     
 """
-#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.11,p_dysf=0.05, excitethresh = 2)
-#h.electrocardiosetup([100,100])
+#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.97,p_dysf=0.05, excitethresh = 2)
+h.electrocardiosetup([100,100])
 #r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
