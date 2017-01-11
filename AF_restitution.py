@@ -450,9 +450,9 @@ plt.show()
     
 """
 
-h = heart(L=200,p_unexcitable=0.05,p_transv= 0.14,p_dysf=0.05)
+#h = heart(L=200,p_unexcitable=0.05,p_transv= 0.14,p_dysf=0.05)
 
-r = run(heart=h, plot=True,store=True,stepsstored=10000,replot=False)
+#r = run(heart=h, plot=True,store=True,stepsstored=10000,replot=False)
    
 
 
