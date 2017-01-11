@@ -58,7 +58,7 @@ for elements in p_transversalconn:
     af_number = []
     number_fib = []
     #n_fib_real = 0
-    systems=AF_restitution.heart(200,0.05,1-elements,0.05)
+    systems=AF_restitution.heart(200,0.05,elements,0.05)
     #systems.electrocardiosetup([100,100])
     for i in range(number_of_systems):
         print(i)

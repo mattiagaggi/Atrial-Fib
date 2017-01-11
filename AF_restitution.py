@@ -23,7 +23,7 @@ gridintime=[] #List for storage of the grid
 
 
 class heart:
-    def __init__(self,L=200,p_unexcitable=0.05,p_fibrosis= 0.75,p_dysf=0.05, excitethresh = 3):
+    def __init__(self,L=200,p_unexcitable=0.05,p_transv= 0.95,p_dysf=0.05):
 
         """#########################PLAN######################
         
@@ -37,7 +37,7 @@ class heart:
 	"""
         self.L=L #Is this the lattice extent (eg length of grid on one axis?) If so, then the grid or edge indices aren't L*L
         self.p_dysf=p_dysf #The fraction of a dysfunctional cells 
-        self.p_fibrosis=p_fibrosis #The fraction of missing transversal connections
+        self.p_transv=p_transv #The fraction of missing transversal connections
         self.p_unexcitable=p_unexcitable #Probablility of a dysfunctional cell being unexcitable
         self.excitation=50 #Value of excitation on the lattice
         self.heartbeatsteps=220 #Time period between excitation wavefronts
@@ -64,7 +64,7 @@ class heart:
 		
 	
         self.edgegrid = np.random.rand(self.L, self.L) #grid of random numbers 
-        self.edgegrid[self.edgegrid < self.p_fibrosis] = 1
+        self.edgegrid[self.edgegrid < self.p_transv] = 1
         self.edgegrid[self.edgegrid != 1] = 0
         
         
@@ -106,7 +106,7 @@ class heart:
         self.dysfgrid[self.dysfgrid < self.p_dysf] = 1
         self.dysfgrid[self.dysfgrid != 1] = 0
         self.edgegrid = np.random.rand(self.L, self.L) #grid of random numbers 
-        self.edgegrid[self.edgegrid > self.p_fibrosis] = 1
+        self.edgegrid[self.edgegrid < self.p_transv] = 1
         self.edgegrid[self.edgegrid != 1] = 0
         self.tempgrid = copy.deepcopy(self.grid)
         self.tempgrid = self.tempgrid.flatten()
@@ -283,12 +283,9 @@ class run: #Class to run code
        
         self.tstartfib=200
         self.tstopfib=210
-        self.timecheck=-120 # I set this to be negative so it doesn't fucked up the first time grid[100,100] is excited
-        
-        
+        #self.timecheck=-120 # I set this to be negative so it doesn't fucked up the first time grid[100,100] is excited
         self.infibrillation=False
         self.tfibrillation=[]
-        
         self.fibrillationcounter=0
 
            
@@ -452,8 +449,15 @@ class run: #Class to run code
 plt.show()
     
 """
-#h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.97,p_dysf=0.05, excitethresh = 2)
-h.electrocardiosetup([100,100])
+
+h = heart(L=200,p_unexcitable=0.05,p_transv= 0.14,p_dysf=0.05)
+
+r = run(heart=h, plot=True,store=True,stepsstored=10000,replot=False)
+   
+
+
+#h.electrocardiosetup([100,100])
+
 #r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)

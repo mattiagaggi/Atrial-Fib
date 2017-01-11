@@ -194,7 +194,7 @@ faces = np.asarray(face_cache )
 #######################################
 ###### RECURSIVELY MAKING THE ICOSPHERE###
 
-sph_vert, sph_tri = create_unit_sphere_vert(5)
+sph_vert, sph_tri = create_unit_sphere_vert(4)
 x, y, z = sph_vert[:,0], sph_vert[:,1], sph_vert[:,2] #Arrays corresponting the the cartesian coords
 ch = ConvexHull(sph_vert)
 
