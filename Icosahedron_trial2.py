@@ -179,8 +179,23 @@ def sph_polar_convert(xyz):
     ptsnew[:,2] = np.arctan2(xyz[:,1], xyz[:,0])
     return ptsnew  
 
+def find_adjacent_faces(face, faces):
     
-######################################
+    adjacent_faces=[]
+    for all_faces in faces:
+        matrix=np.vstack((face,all_faces))  #stacks the face to check with one of the faces from the list 
+        unique_el=np.unique(matrix.view([('',matrix.dtype)]*matrix.shape[1])) #finds unique elements in the new array
+        if np.size(unique_el)<=4: # if there are 4 or less unique elements (the faces share 2 or more vertices then the face is appended to the list
+            adjacent_faces.append(all_faces)
+    return adjacent_faces
+            
+    
+    
+#def unique_rows(a):
+#    a = np.ascontiguousarray(a)
+#    unique_a = np.unique(a.view([('', a.dtype)]*a.shape[1]))
+#    return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))    
+#######################################
 ####MAKING THE ICOSOHEDRON############
 
 icosahedron_vertices = normalize_v3(np.array(icosahedron_vertices))
@@ -227,6 +242,12 @@ vertex1, vertex2, vertex3 = ch.points[ch.simplices[:,0]],ch.points[ch.simplices[
 sph_v_1 = sph_polar_convert(vertex1)
 sph_v_2 = sph_polar_convert(vertex2)
 sph_v_3 = sph_polar_convert(vertex3)
+
+
+
+
+
+
 
 colours = sph_v_3[:,2] #Making the colors of the faces correspond to the value of the angle
 
