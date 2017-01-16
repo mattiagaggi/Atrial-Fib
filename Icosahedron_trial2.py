@@ -179,7 +179,7 @@ def sph_polar_convert(xyz):
     ptsnew[:,2] = np.arctan2(xyz[:,1], xyz[:,0])
     return ptsnew  
 
-def find_adjacent_faces(face, faces):
+def find_adjacent_faces(face, faces): #still a for loop but maybe more efficient?
     
     adjacent_faces=[]
     for all_faces in faces:
@@ -188,7 +188,11 @@ def find_adjacent_faces(face, faces):
         if np.size(unique_el)<=4: # if there are 4 or less unique elements (the faces share 2 or more vertices then the face is appended to the list
             adjacent_faces.append(all_faces)
     return adjacent_faces
-            
+"""
+another way to do it:
+    
+    divide the faces array into two,
+
     
     
 #def unique_rows(a):
