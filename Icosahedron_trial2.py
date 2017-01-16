@@ -189,9 +189,18 @@ def find_adjacent_faces(face, faces): #still a for loop but maybe more efficient
             adjacent_faces.append(all_faces)
     return adjacent_faces
 """
-another way to do it:
+another way to do it given a face to look at called F[0]:
     
-    divide the faces array into two,
+    -divide the faces array into two called G1,G2
+    
+     -G1'=unique_elements(G1), G2'=uni....
+     
+     -check if size(unique _elements( G1' coupled with F[0]))=size(unique_elements(G1)) and same for G2'
+     
+     -if size is the same then discard that group and repeat the hole process for group remained
+     
+"""
+     
 
     
     
