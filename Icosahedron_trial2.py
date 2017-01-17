@@ -196,21 +196,19 @@ def find_adjacent_faces2(face,faces):
     verticesflat=faces.reshape((nvertices,3))
     vertices_index=range(nvertices)
    
-    
-    
-    bins=[]
-    bins=bins+( [vertices_index,verticesflat,adjacent_index])
+    bins=[ [vertices_index,verticesflat,face,adjacent_index] ]
     
     while len(bins)>0:
         print bins
+        print len(bins)
         rnd=np.random.randint(0,len(bins))
+        
         new_binary=binary_search(bins[rnd])
-        bins=bins+new_binary
-        if len(new_binary)==2:
-            adjacent_index=adjacent_index+[new_binary[0][2]]
-            adjacent_index=adjacent_index+[new_binary[0][2]]
-        if len(new_binary)==3:
-            adjacent_index=adjacent_index+[new_binary[2]]
+        if new_binary[0]!=True and new_binary[0]!=False:
+            bins=bins+new_binary
+        elif new_binary[0]==True:
+            adjacent_index=adjacent_index+new_binary[1]
+        
         del bins[rnd]
         
     return adjacent_index
@@ -219,21 +217,20 @@ def find_adjacent_faces2(face,faces):
 def binary_search(v):                               
     
     nvertices=len(v[0])
+    face=v[2]
+    
+    
     if nvertices==1:
-        v[2].append(v[0])
-        
+        if v[1] in face:
+            return [True,v[0]]
+        else:
+            return [False,v[0]]
+    
     else:
         one_branch=v[1][0:int(nvertices/2.)]
         two_branch=v[1][int(nvertices/2.) : ]
         
-        #print one_branch
-        #print type(one_branch)
-        #print np.size(one_branch)
-        #one_branch=np.array(one_branch)
-        #print one_branch
-        #print type(one_branch)
-        #print np.size(one_branch)
-        
+
         index_one_branch=v[0][0:int(nvertices/2.)]
         index_two_branch=v[0][int(nvertices/2.):]
         size_uniqueone_branch=np.size(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
@@ -246,16 +243,16 @@ def binary_search(v):
           
                 
             
-            return [ [index_one_branch, one_branch ,v[2]],[index_two_branch, two_branch ,v[2]] ] 
+            return  [[index_one_branch, one_branch ,face,v[3]],[index_two_branch, two_branch ,face,v[3]] ]
         
         elif size_uniqueone_branch_face!= size_uniqueone_branch:
             
-            return  [index_one_branch, one_branch ,v[2]]   
+            return [ [index_one_branch, one_branch ,face,v[3]]  ]
         
         elif size_uniquetwo_branch_face!= size_uniquetwo_branch:
             
         
-            return  [index_two_branch, two_branch ,v[2]]
+            return [ [index_two_branch, two_branch ,face,v[3]] ]
    
     
     
