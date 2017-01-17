@@ -190,88 +190,78 @@ def sph_polar_convert(xyz):
 #    return adjacent_faces
     
 def find_adjacent_faces2(face,faces):
+    #check that you first erase face from faces
+    
     adjacent_index=[]
     shape_faces=faces.shape
     nvertices=shape_faces[0]*shape_faces[1]
-    verticesflat=faces.reshape((nvertices,3))
-    vertices_index=range(nvertices)
-   
-    bins=[ [vertices_index,verticesflat,face,adjacent_index] ]
+    verticesflat=faces.reshape((nvertices,3))  #flattens the faces array in an array of vertices
+    vertices_index=range(nvertices)     #creates a list of indices
     
-    while len(bins)>0:
-        print bins
-        print len(bins)
-        rnd=np.random.randint(0,len(bins))
+    
+   
+    bins=[ [vertices_index,verticesflat,face] ]  # a variable which is a list where each element is a list as follows [list of indices of vertices, flattened list of vertices, face to stuudy]]
+    
+    while len(bins)>0:   #repeats binary tree until bins in empty
+
+        rnd=np.random.randint(0,len(bins)) 
         
-        new_binary=binary_search(bins[rnd])
-        if new_binary[0]!=True and new_binary[0]!=False:
+        new_binary=binary_search(bins[rnd])   #uses binary search on a random element in bins
+  
+        if new_binary[0]!=True :  #when the binary creates two lists, splitting the input in two
             bins=bins+new_binary
-        elif new_binary[0]==True:
-            adjacent_index=adjacent_index+new_binary[1]
+        elif new_binary[0]==True:#when the binary search arrives at only one element and this element is a repeated vertex
+            if np.array_equal(verticesflat[new_binary[1]],face[0]) :
+                adjacent_index.append(new_binary[1])
+            elif np.array_equal(verticesflat[new_binary[1]],face[1]):
+                adjacent_index.append(new_binary[1])
+            elif np.array_equal(verticesflat[new_binary[1]],face[2]):
+                adjacent_index.append(new_binary[1])
         
-        del bins[rnd]
+        del bins[rnd]  #erases the element studied from the list
         
-    return adjacent_index
+    return adjacent_index  #gives back the index of the verticesflat list which is a repeated vertex
  
     
 def binary_search(v):                               
     
-    nvertices=len(v[0])
+
     face=v[2]
+    nvertices=len(v[0])
     
-    
-    if nvertices==1:
-        if v[1] in face:
-            return [True,v[0]]
-        else:
-            return [False,v[0]]
-    
-    else:
+    if nvertices>=2: #if the indices are more than two then it splits the original list into two
         one_branch=v[1][0:int(nvertices/2.)]
         two_branch=v[1][int(nvertices/2.) : ]
         
 
         index_one_branch=v[0][0:int(nvertices/2.)]
         index_two_branch=v[0][int(nvertices/2.):]
+        
+        #this part can be improved a lot
         size_uniqueone_branch=np.size(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
         size_uniqueone_branch_face=np.size(np.unique(np.vstack((face,one_branch)).view([('',np.vstack((face,one_branch)).dtype)]*3)))
         size_uniquetwo_branch=np.size(np.unique(two_branch.view([('',two_branch.dtype)]*3)))
         size_uniquetwo_branch_face=np.size(np.unique(np.vstack((face,two_branch)).view([('',np.vstack((face,two_branch)).dtype)]*3)))
         
-        if size_uniqueone_branch_face!= size_uniqueone_branch and size_uniquetwo_branch_face!= size_uniquetwo_branch:
-            
-          
-                
-            
-            return  [[index_one_branch, one_branch ,face,v[3]],[index_two_branch, two_branch ,face,v[3]] ]
         
-        elif size_uniqueone_branch_face!= size_uniqueone_branch:
+        print 'bufbjhfvjbh',size_uniqueone_branch_face- size_uniqueone_branch
+        print 'fjbvij',size_uniquetwo_branch_face-size_uniquetwo_branch
+        if size_uniqueone_branch_face- size_uniqueone_branch < 3 and size_uniquetwo_branch_face-size_uniquetwo_branch <3: #if both of them contain an element which is also in face
             
-            return [ [index_one_branch, one_branch ,face,v[3]]  ]
+            return  [[index_one_branch, one_branch ,face],[index_two_branch, two_branch ,face] ]
         
-        elif size_uniquetwo_branch_face!= size_uniquetwo_branch:
+        elif size_uniqueone_branch_face- size_uniqueone_branch<3: #if only branch one contains an element which is also in face
+            
+            return [ [index_one_branch, one_branch ,face]  ]
+        
+        elif size_uniquetwo_branch_face- size_uniquetwo_branch<3:
             
         
-            return [ [index_two_branch, two_branch ,face,v[3]] ]
+            return [ [index_two_branch, two_branch ,face] ]
+    else: #if the input is only one vertex the binary search ends
+        return [True,v[0][0]]
+        
    
-    
-    
-    
-    
-    
-"""
-another way to do it given a face to look at called F[0]:
-    
-    -divide the faces array into two called G1,G2
-    
-     -G1'=unique_elements(G1), G2'=uni....
-     
-     -check if size(unique _elements( G1' coupled with F[0]))=size(unique_elements(G1)) and same for G2'
-     
-     -if size is the same then discard that group and repeat the hole process for group remained
-     
-"""
-     
 
     
     
