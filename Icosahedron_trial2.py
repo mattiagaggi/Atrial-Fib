@@ -179,15 +179,89 @@ def sph_polar_convert(xyz):
     ptsnew[:,2] = np.arctan2(xyz[:,1], xyz[:,0])
     return ptsnew  
 
-def find_adjacent_faces(face, faces): #still a for loop but maybe more efficient?
+#def find_adjacent_faces(face, faces): #still a for loop but maybe more efficient?
+#    
+#    adjacent_faces=[]
+#    for all_faces in faces:
+#        matrix=np.vstack((face,all_faces))  #stacks the face to check with one of the faces from the list 
+#        unique_el=np.unique(matrix.view([('',matrix.dtype)]*matrix.shape[1])) #finds unique elements in the new array
+#        if np.size(unique_el)<=4: # if there are 4 or less unique elements (the faces share 2 or more vertices then the face is appended to the list
+#            adjacent_faces.append(all_faces)
+#    return adjacent_faces
     
-    adjacent_faces=[]
-    for all_faces in faces:
-        matrix=np.vstack((face,all_faces))  #stacks the face to check with one of the faces from the list 
-        unique_el=np.unique(matrix.view([('',matrix.dtype)]*matrix.shape[1])) #finds unique elements in the new array
-        if np.size(unique_el)<=4: # if there are 4 or less unique elements (the faces share 2 or more vertices then the face is appended to the list
-            adjacent_faces.append(all_faces)
-    return adjacent_faces
+def find_adjacent_faces2(face,faces):
+    adjacent_index=[]
+    shape_faces=faces.shape
+    nvertices=shape_faces[0]*shape_faces[1]
+    verticesflat=faces.reshape((nvertices,3))
+    vertices_index=range(nvertices)
+   
+    
+    
+    bins=[]
+    bins=bins+( [vertices_index,verticesflat,adjacent_index])
+    
+    while len(bins)>0:
+        print bins
+        rnd=np.random.randint(0,len(bins))
+        new_binary=binary_search(bins[rnd])
+        bins=bins+new_binary
+        if len(new_binary)==2:
+            adjacent_index=adjacent_index+[new_binary[0][2]]
+            adjacent_index=adjacent_index+[new_binary[0][2]]
+        if len(new_binary)==3:
+            adjacent_index=adjacent_index+[new_binary[2]]
+        del bins[rnd]
+        
+    return adjacent_index
+ 
+    
+def binary_search(v):                               
+    
+    nvertices=len(v[0])
+    if nvertices==1:
+        v[2].append(v[0])
+        
+    else:
+        one_branch=v[1][0:int(nvertices/2.)]
+        two_branch=v[1][int(nvertices/2.) : ]
+        
+        #print one_branch
+        #print type(one_branch)
+        #print np.size(one_branch)
+        #one_branch=np.array(one_branch)
+        #print one_branch
+        #print type(one_branch)
+        #print np.size(one_branch)
+        
+        index_one_branch=v[0][0:int(nvertices/2.)]
+        index_two_branch=v[0][int(nvertices/2.):]
+        size_uniqueone_branch=np.size(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
+        size_uniqueone_branch_face=np.size(np.unique(np.vstack((face,one_branch)).view([('',np.vstack((face,one_branch)).dtype)]*3)))
+        size_uniquetwo_branch=np.size(np.unique(two_branch.view([('',two_branch.dtype)]*3)))
+        size_uniquetwo_branch_face=np.size(np.unique(np.vstack((face,two_branch)).view([('',np.vstack((face,two_branch)).dtype)]*3)))
+        
+        if size_uniqueone_branch_face!= size_uniqueone_branch and size_uniquetwo_branch_face!= size_uniquetwo_branch:
+            
+          
+                
+            
+            return [ [index_one_branch, one_branch ,v[2]],[index_two_branch, two_branch ,v[2]] ] 
+        
+        elif size_uniqueone_branch_face!= size_uniqueone_branch:
+            
+            return  [index_one_branch, one_branch ,v[2]]   
+        
+        elif size_uniquetwo_branch_face!= size_uniquetwo_branch:
+            
+        
+            return  [index_two_branch, two_branch ,v[2]]
+   
+    
+    
+    
+    
+    
 """
 another way to do it given a face to look at called F[0]:
     
