@@ -203,7 +203,7 @@ def find_adjacent_faces(face,faces):
             bins=bins+new_binary
         elif new_binary[0]==True:#when the binary search arrives at only one element and this element is a repeated vertex
             if np.array_equal(verticesflat[new_binary[1]],face[0]) :
-                adjacent_index.append(int(new_binary[1]/3.))
+                adjacent_index.append(int(new_binary[1]/3.)) #divides by three because it finds the index of faces not verticesflat
             elif np.array_equal(verticesflat[new_binary[1]],face[1]):
                 adjacent_index.append(int(new_binary[1]/3.))
             elif np.array_equal(verticesflat[new_binary[1]],face[2]):
@@ -211,7 +211,7 @@ def find_adjacent_faces(face,faces):
         
         del bins[rnd]  #erases the element studied from the list
         
-    return adjacent_index  #gives back the index of the verticesflat list which is a repeated vertex
+    return adjacent_index  #gives back the index of the faces list whose faces have a common vertex
  
     
 def binary_search(v):                               
