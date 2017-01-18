@@ -179,17 +179,8 @@ def sph_polar_convert(xyz):
     ptsnew[:,2] = np.arctan2(xyz[:,1], xyz[:,0])
     return ptsnew  
 
-#def find_adjacent_faces(face, faces): #still a for loop but maybe more efficient?
-#    
-#    adjacent_faces=[]
-#    for all_faces in faces:
-#        matrix=np.vstack((face,all_faces))  #stacks the face to check with one of the faces from the list 
-#        unique_el=np.unique(matrix.view([('',matrix.dtype)]*matrix.shape[1])) #finds unique elements in the new array
-#        if np.size(unique_el)<=4: # if there are 4 or less unique elements (the faces share 2 or more vertices then the face is appended to the list
-#            adjacent_faces.append(all_faces)
-#    return adjacent_faces
-    
-def find_adjacent_faces2(face,faces):
+
+def find_adjacent_faces(face,faces):
     #check that you first erase face from faces
     
     adjacent_index=[]
@@ -212,11 +203,11 @@ def find_adjacent_faces2(face,faces):
             bins=bins+new_binary
         elif new_binary[0]==True:#when the binary search arrives at only one element and this element is a repeated vertex
             if np.array_equal(verticesflat[new_binary[1]],face[0]) :
-                adjacent_index.append(new_binary[1])
+                adjacent_index.append(int(new_binary[1]/3.))
             elif np.array_equal(verticesflat[new_binary[1]],face[1]):
-                adjacent_index.append(new_binary[1])
+                adjacent_index.append(int(new_binary[1]/3.))
             elif np.array_equal(verticesflat[new_binary[1]],face[2]):
-                adjacent_index.append(new_binary[1])
+                adjacent_index.append(int(new_binary[1]/3.))
         
         del bins[rnd]  #erases the element studied from the list
         
@@ -237,20 +228,33 @@ def binary_search(v):
         index_one_branch=v[0][0:int(nvertices/2.)]
         index_two_branch=v[0][int(nvertices/2.):]
         
-        #this part can be improved a lot
-        size_uniqueone_branch=np.size(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
-        size_uniqueone_branch_face=np.size(np.unique(np.vstack((face,one_branch)).view([('',np.vstack((face,one_branch)).dtype)]*3)))
-        size_uniquetwo_branch=np.size(np.unique(two_branch.view([('',two_branch.dtype)]*3)))
-        size_uniquetwo_branch_face=np.size(np.unique(np.vstack((face,two_branch)).view([('',np.vstack((face,two_branch)).dtype)]*3)))
+      
+        uniqueone_branch=(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
+        uniqueone_branch=uniqueone_branch.view(one_branch.dtype).reshape((uniqueone_branch.shape[0], 3))
+        size_uniqueone_branch=int(np.size(uniqueone_branch)/3.)
         
         
-        print 'bufbjhfvjbh',size_uniqueone_branch_face- size_uniqueone_branch
-        print 'fjbvij',size_uniquetwo_branch_face-size_uniquetwo_branch
-        if size_uniqueone_branch_face- size_uniqueone_branch < 3 and size_uniquetwo_branch_face-size_uniquetwo_branch <3: #if both of them contain an element which is also in face
+        uniqueone_branch_face=np.vstack((face,one_branch))
+        uniqueone_branch_face=(np.unique(one_branch.view([('',one_branch.dtype)]*3)))
+        uniqueone_branch_face=uniqueone_branch_face.view(one_branch.dtype).reshape((uniqueone_branch_face.shape[0], 3))
+        size_uniqueone_branch_face=int(np.size(uniqueone_branch_face)/3.)
+        
+        uniquetwo_branch=(np.unique(two_branch.view([('',two_branch.dtype)]*3)))
+        uniquetwo_branch=uniquetwo_branch.view(two_branch.dtype).reshape((uniquetwo_branch.shape[0], 3))
+        size_uniquetwo_branch=int(np.size(uniquetwo_branch)/3.)
+        
+        
+        uniquetwo_branch_face=np.vstack((face,two_branch))
+        uniquetwo_branch_face=(np.unique(two_branch.view([('',two_branch.dtype)]*3)))
+        uniquetwo_branch_face=uniquetwo_branch_face.view(two_branch.dtype).reshape((uniquetwo_branch_face.shape[0], 3))
+        size_uniquetwo_branch_face=int(np.size(uniquetwo_branch_face)/3.)
+        
+        
+        if size_uniqueone_branch_face- size_uniqueone_branch <3  and size_uniquetwo_branch_face-size_uniquetwo_branch <3: #if both of them contain an element which is also in face
             
             return  [[index_one_branch, one_branch ,face],[index_two_branch, two_branch ,face] ]
         
-        elif size_uniqueone_branch_face- size_uniqueone_branch<3: #if only branch one contains an element which is also in face
+        elif size_uniqueone_branch_face- size_uniqueone_branch <3: #if only branch one contains an element which is also in face
             
             return [ [index_one_branch, one_branch ,face]  ]
         
