@@ -267,6 +267,9 @@ class run: #Class to run code
             if self.replot==False:
                 self.anim1 = animation.FuncAnimation(self.figure, self.updatefig,
                             frames=10000, interval=self.interval, blit=False)
+                mywriter = animation.FFMpegWriter()
+
+                self.anim1.save('lines5.mp4', writer=mywriter,fps=0 )
             
             if self.store==True:
                 #gridintime.append(self.heart.grid) 
@@ -398,13 +401,11 @@ class run: #Class to run code
 
 
         
-    #def timefib
-"""      
-plt.show()
+
     
 
-h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.87,p_dysf=0.05)
-#h.electrocardiosetup([100,100])
-r = run(heart=h, plot=True,store=False,stepsstored=10000,replot=False)
-r.plotecg()
-plt.show()"""
+h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.88,p_dysf=0.05)
+h.electrocardiosetup([100,100])
+r = run(heart=h, plot=True,store=True,stepsstored=3000,replot=False)
+#r.plotecg()
+plt.show()

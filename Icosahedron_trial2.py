@@ -211,6 +211,8 @@ def find_adjacent_faces(face,faces):
         
         del bins[rnd]  #erases the element studied from the list
         
+    
+    
     return adjacent_index  #gives back the index of the faces list whose faces have a common vertex
  
     
