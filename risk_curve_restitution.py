@@ -51,15 +51,15 @@ t_in_fib = []
 
 for elements in p_transversalconn:
     print("Nu = %s" %(elements))
-    totfibtime = 0
+
     average=[]
     singlemeasures=[]
     t_fib_temp = []
     af_number = []
     number_fib = []
-    #n_fib_real = 0
+
     systems=AF_restitution.heart(200,0.05,elements,0.05)
-    #systems.electrocardiosetup([100,100])
+   
     for i in range(number_of_systems):
         print(i)
         
@@ -67,10 +67,9 @@ for elements in p_transversalconn:
         timeinfib = systemsrun.timeinfibrillation()
         listoffib = systemsrun.tfibrillation
         n_fib = len(listoffib)
-        systems.reinitialise()
         t_fib_temp.append(timeinfib)
-        #pickle.dump(systemsrun.gridintime, fileobj0, -1)
-
+        systems.reinitialise()
+        
         singlemeasures.append(timeinfib/float(time))
         af_number.append(listoffib)
         if n_fib > 0:
@@ -78,6 +77,7 @@ for elements in p_transversalconn:
         else:
             number_fib.append(0)
     print "one set of systems done"
+    
     t_in_fib.append(t_fib_temp)
     t_fib_data.append(af_number)
     n_fib_data.append(number_fib)
@@ -96,19 +96,18 @@ for elements in p_transversalconn:
 risk=np.array(risk)
 
 
-fileobj7 = open('tinfibdata_rest.pkl', 'wb')
-fileobj0 = open('tfibdata_rest.pkl', 'wb')
-fileobj1 = open('riskdata_rest.pkl', 'wb')
-fileobj2 = open('riskerrorrcdata_rest.pkl', 'wb')
-fileobj3 = open('tfibset_rest.pkl', 'wb')
-fileobj4 = open('nfib_rest.pkl', 'wb')
-fileobj5 = open('nfibavrg_rest.pkl', 'wb')
+fileobj0 = open('listoffibrillationtimes_rest.pkl', 'wb')
+fileobj1 = open('risk_rest.pkl', 'wb')
+fileobj2 = open('riskerrorr_rest.pkl', 'wb')
+
+fileobj4 = open('numberfibrillations_rest.pkl', 'wb')
+fileobj5 = open('nfibaverage_rest.pkl', 'wb')
 fileobj6 = open('nfiberr_rest.pkl', 'wb')
+fileobj7 = open('tinfib_rest.pkl', 'wb')
 
 pickle.dump(t_fib_data, fileobj0, -1)
 pickle.dump(risk, fileobj1, -1)
 pickle.dump(riskstd, fileobj2, -1)
-pickle.dump(t_fib_data, fileobj3, -1)
 pickle.dump(n_fib_data, fileobj4, -1)
 pickle.dump(n_fib_avg, fileobj5, -1)
 pickle.dump(n_fib_err, fileobj6, -1)
@@ -116,11 +115,11 @@ pickle.dump(t_in_fib, fileobj7, -1)
 
 fileobj1.close()
 fileobj2.close()
-fileobj3.close()
 fileobj4.close()
 fileobj0.close()
 fileobj5.close()
 fileobj6.close()
+fileobj7.close()
     
 
 

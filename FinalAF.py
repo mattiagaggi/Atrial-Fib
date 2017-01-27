@@ -267,9 +267,9 @@ class run: #Class to run code
             if self.replot==False:
                 self.anim1 = animation.FuncAnimation(self.figure, self.updatefig,
                             frames=10000, interval=self.interval, blit=False)
-                mywriter = animation.FFMpegWriter()
+                #mywriter = animation.FFMpegWriter()
 
-                self.anim1.save('lines5.mp4', writer=mywriter,fps=0 )
+                #self.anim1.save('lines5.mp4', writer=mywriter,fps=0 )
             
             if self.store==True:
                 #gridintime.append(self.heart.grid) 

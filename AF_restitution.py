@@ -43,6 +43,7 @@ class heart:
         self.heartbeatsteps=220 #Time period between excitation wavefronts
         self.grid = np.zeros((self.L,self.L))
         self.gridofexcite = copy.deepcopy(self.grid)
+        
         self.tempgrid = copy.deepcopy(self.grid)
         self.tempgrid = self.tempgrid.flatten()
         self.tempgrid+=220
