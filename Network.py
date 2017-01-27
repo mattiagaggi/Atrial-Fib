@@ -23,11 +23,14 @@ class create_network:
         self.p_dysf=p_dysf
         self.p_transv=p_transv
         self.p_unexcitable=p_unexcitable
+        self.excitation=50
+        
+        
         self.array_vertical=array_vertical
         
         self.size=len(array_nodesindices)
         self.nodes=np.zeros(self.size)
-        self.newnodes=np.zeros(self.size)
+        
         self.array_transv=[]
         self.excited=[]
         
@@ -56,32 +59,30 @@ class create_network:
      
     def excite(self,nodeindex):
         
-        self.node[nodeindex]+=50
+        self.node[nodeindex]+=self.excitation
         self.excited.append(nodeindex)
 
     def onestep(self):
         
-        
+        newnodes=np.zeros(self.size)
         f = operator.itemgetter(*self.excited) # works well with list or array
         self.excited=f(self.connections) #the output of f() is ( [....],[...],....) change into a unique list
-        self.newnodes[self.excited]+=1
+        newnodes[self.excited]+=1
         # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
         
         self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way
         self.unexcited[self.unexcited < self.p_unexcitable] = 1
         self.unexcited[self.self.unexcited != 1] = 0
         
-        self.newnodes-=self.dysf*self.unexcited*self.newnodes #remove unexcited dysf cells
-        self.newnodes*= (self.nodes==0) #removes refractory cells
-    
-        self.nodes-=1
+        newnodes-=self.dysf*self.unexcited*newnodes #remove excited dysf cells which  are not excited
         
+        newnodes*= (self.nodes==0) #removes refractory cells
+        
+        self.nodes-=1  
         self.nodes[self.nodes==-1]=0
-        self.nodes+=self.newnodes
-   
- 
-
         
+        self.nodes += newnodes*self.excitation
+   
 
 
 class propagation:
