@@ -122,7 +122,7 @@ class create_network:
         time7=time.time()
         print("time taken",(time7-time6))
         
-        print ("total time", ( (time2-time1)+(time3-time2)+(time4-time3)+(time5-time4)+(time6-time5)+(time7-time6)))
+        print ("total time", ( time7-time1))
    
 
 
