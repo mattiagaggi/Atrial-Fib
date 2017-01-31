@@ -10,7 +10,22 @@ def decision(p):
         return True
     else:
         return False
-
+def trial():
+    nodes=range(40000)
+    a=np.arange(40000)
+    b=np.arange(40000)
+    c=np.arange(40000)
+    np.random.shuffle(b)
+    np.random.shuffle(c)
+    l=[]
+    for e in np.arange(40000):
+        l.append((a[e],b[e]))
+        l.append((c[e],b[e]))
+        l.append((a[e],c[e]))
+    array_transv=[]
+    return nodes,l,array_transv,1,0.5,0.5
+        
+    
 
 class create_network:
     def __init__(self,array_nodesindices,array_vertical,array_transv,p_transv,p_dysf,p_unexcitable):
@@ -62,7 +77,8 @@ class create_network:
      
     def excite(self,nodeindex):
         
-        self.nodes[nodeindex]+=self.excitation
+
+     
         self.excited.append(nodeindex)
 
     def onestep(self):
@@ -78,7 +94,7 @@ class create_network:
         oper 6: every node-=1 and adds the newnodes
             
         """ 
-        
+        print self.excited
         
         time0=time.time()
         newnodes=np.zeros(self.size)
@@ -86,35 +102,41 @@ class create_network:
     
         
         
+        if len(self.excited)!=0:
+            f = operator.itemgetter(*self.excited) # works well with list or array
+            time2=time.time()
+            print("time taken",(time2-time1))
+            
+            
+            self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
+            try:
+                self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
+            except TypeError:
+                self.excited=list(chain(self.excited))
+            time3=time.time()
+            print("time taken",(time3-time2)) #seems quick but can improve
         
-        f = operator.itemgetter(*self.excited) # works well with list or array
-        time2=time.time()
-        print("time taken",(time2-time1))
+            newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
+            #need to account for repeated elements
+            time4=time.time()
+            print("time taken",(time4-time3))
         
+            self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
+            self.unexcited[self.unexcited < self.p_unexcitable] = 1
+            self.unexcited[self.unexcited != 1] = 0
+            time5=time.time()
+            print("time taken",(time5-time4))
+            
+            newnodes[newnodes>0]=1
+            newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
+            newnodes*= (self.nodes==0) #removes refractory cells
         
-        self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
-        try:
-            self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
-        except TypeError:
-            self.excited=list(chain(self.excited))
-        time3=time.time()
-        print("time taken",(time3-time2)) #seems quick but can improve
-        
-        newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
-        newnodes[newnodes>0]=1#need to account for repeated elements
-        time4=time.time()
-        print("time taken",(time4-time3))
+            self.excited=np.flatnonzero(newnodes)
+            self.excited=self.excited.tolist()
     
-        self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
-        self.unexcited[self.unexcited < self.p_unexcitable] = 1
-        self.unexcited[self.unexcited != 1] = 0
-        time5=time.time()
-        print("time taken",(time5-time4))
-        
-        newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
-        newnodes*= (self.nodes==0) #removes refractory cells
         time6=time.time()
-        print("time taken",(time6-time5))
+            
+            
         
         self.nodes-=1  
         self.nodes[self.nodes==-1]=0
