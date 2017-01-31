@@ -23,12 +23,13 @@ def trial():
         l.append((c[e],b[e]))
         l.append((a[e],c[e]))
     array_transv=[]
-    return nodes,l,array_transv,1,0.5,0.5
+    p=[0,1]
+    return nodes,l,array_transv,1,p,0.5,0.5
         
     
 
 class create_network:
-    def __init__(self,array_nodesindices,array_vertical,array_transv,p_transv,p_dysf,p_unexcitable):
+    def __init__(self,array_nodesindices,array_vertical,array_transv,p_transv,impulse_start,p_dysf,p_unexcitable):
         """
         this inputs array_nodesindices as a list of faces indices,
         
@@ -42,21 +43,22 @@ class create_network:
         self.p_transv=p_transv
         self.p_unexcitable=p_unexcitable
         self.excitation=50
+        self.heartbeatssteps=220
     
         self.array_vertical=array_vertical
+        self.impulse_start=impulse_start
         self.size=len(array_nodesindices)
         self.nodes=np.zeros(self.size)
        
         self.array_transv=[]
         self.excited=[]
-
         self.dysf=np.random.rand(self.size)  #create array of dysf cells
         self.dysf[self.dysf < self.p_dysf] = 1
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
         self.array_alltransv=array_transv
                
-        for elements in array_transv: #append transversal connections to a new list according to the probability of transv connect
+        for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
               self.array_transv.append(elements)
         
@@ -80,23 +82,12 @@ class create_network:
 
      
         self.excited.append(nodeindex)
+        self.nodes[nodeindex]=self.excitation
 
     def onestep(self):
-        """
-        oper 1-2: maps excited elem to the next excited
+
         
-        oper 3: excites the newnodes
-        
-        oper 4 : creates array of unexcited elements
-        
-        oper5: removes nodes in refractory state, then removes dysfunctional non-excited elements
-        
-        oper 6: every node-=1 and adds the newnodes
-            
-        """ 
-        print self.excited
-        
-        time0=time.time()
+
         newnodes=np.zeros(self.size)
         time1=time.time()
     
@@ -135,26 +126,78 @@ class create_network:
             self.excited=self.excited.tolist()
     
         time6=time.time()
-            
-            
-        
         self.nodes-=1  
         self.nodes[self.nodes==-1]=0
         self.nodes += newnodes*self.excitation
+        print np.flatnonzero(self.nodes)
         time7=time.time()
         print("time taken",(time7-time6))
         
         print ("total time", ( time7-time1))
    
+    def reinitialise(self):
+        self.nodes=np.zeros(self.size)
+       
+        self.array_transv=[]
+        self.excited=[]
+        self.dysf=np.random.rand(self.size)  #create array of dysf cells
+        self.dysf[self.dysf < self.p_dysf] = 1
+        self.dysf[self.dysf != 1] = 0
+        self.unexcited=np.random.rand(self.size)
+                
+        for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
+          if decision(self.p_transv):
+              self.array_transv.append(elements)
+         
+        self.connections = {}   #create dictionary with connections ex d={1:[0],2:[3,4],.....}
+        for key,value in (self.array_vertical+self.array_transv):
+            try:
+                self.connections[key].append(value)
+            except KeyError:
+                self.connections[key]=[value]
+        
+        for value,key in (self.array_vertical+self.array_transv): #append also connections from second to first elements
+            try:
+                self.connections[key].append(value)
+            except KeyError:
+                self.connections[key]=[value]
+      
+        
 
-
-class propagation:
+class run:
     
-    def __init__(self,network, runs=10):
+    def __init__(self,network, plot=False,store=True,runs=5000):
         
         
-        self.runs=runs    
+        self.runs=runs   
+        self.plot= plot
+        self.store=store
         self.network=network
+        self.time=0
+        self.nodeshistory=[]
+        self.excitedhistory=[]
+        self.nodeshistory.append(self.network.nodes)
+        
+        
+        
+        for times in range(runs):
+            if self.store==True:
+                
+                if self.time%self.network.heartbeatssteps==0:
+                    for elements in self.network.impulse_start:
+                        self.network.excite(elements)
+                self.time+=1
+                self.excitedhistory.append(self.network.excited)
+          
+            
+                
+                   
+                self.network.onestep()
+    
+            
+            
+            
+            
 
        
         
