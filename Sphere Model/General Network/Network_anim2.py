@@ -395,9 +395,9 @@ class Create_Sphere_and_Connections:
                     [8, 6, 7],
                     [9, 8, 1]])
         
-        self.s = sp.Sphere(vertices = self.icosahedron_vertices, faces = self.faces, recursion_level = 5 )
+        self.s = sp.Sphere(vertices = self.icosahedron_vertices, faces = self.faces, recursion_level = 6 )
         self.s.ch = self.s.construct_icosphere()
-        x, y, z   = self.s.ch.points[self.s.ch.vertices][:,0],self.s.ch.points[s.ch.vertices][:,1], self.s.ch.points[self.s.ch.vertices][:,2]
+        x, y, z   = self.s.ch.points[self.s.ch.vertices][:,0],self.s.ch.points[self.s.ch.vertices][:,1], self.s.ch.points[self.s.ch.vertices][:,2]
         vertex1, vertex2, vertex3 = self.s.ch.points[self.s.ch.simplices[:,0]],self.s.ch.points[self.s.ch.simplices[:,1]], self.s.ch.points[self.s.ch.simplices[:,2]]# hull_pts[ch.simplices[:,1]], hull_pts[ch.simplices[:,2]]
         
         
