@@ -53,7 +53,7 @@ faces = np.array(
 
 class Sphere:
     
-    def __init__(self, vertices = icosahedron_vertices, faces = faces, recursion_level = 6 ):
+    def __init__(self, vertices = icosahedron_vertices, faces = faces, recursion_level = 4 ):
         
         self.icosahedron_vertices = vertices
         self.faces = faces
