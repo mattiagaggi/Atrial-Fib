@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.sparse import csr_matrix
 import operator
 from itertools import chain
 import time
@@ -7,6 +6,8 @@ from matplotlib import animation
 from matplotlib import pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
+import ico_propagation as sp
+
 
 def decision(p):
     if np.random.random()<p:
@@ -185,7 +186,7 @@ class run:
         
         
     def propagate_n(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -198,7 +199,7 @@ class run:
             self.network.onestep()
             
     def propagate_a(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -287,177 +288,178 @@ class run:
         return self.surf,
         
                 
-import ico_propagation as sp
 
 
-t = (1.0 + (5.0)**(0.5) )/ 2.0
-
-icosahedron_vertices = [[-1,  t,  0],
-                            [ 1,  t,  0],
-                            [-1, -t,  0],
-                            [1, -t,  0],
-                            [ 0, -1,  t],
-                            [0,  1,  t],
-                            [ 0, -1, -t],
-                            [ 0,  1, -t],
-                            [ t,  0, -1],
-                            [t,  0,  1],
-                            [-t,  0, -1],
-                            [-t,  0,  1]]
-
-faces = np.array(
-            [[0, 11, 5],
-            [0, 5, 1],
-            [0, 1, 7],
-            [0, 7, 10],
-            [0, 10, 11],
-            [1, 5, 9],
-            [5, 11, 4],
-            [11, 10, 2],
-            [10, 7, 6],
-            [7, 1, 8],
-            [3, 9, 4],
-            [3, 4, 2],
-            [3, 2, 6],
-            [3, 6, 8],
-            [3, 8, 9],
-            [4, 9, 5],
-            [2, 4, 11],
-            [6, 2, 10],
-            [8, 6, 7],
-            [9, 8, 1]])
 
 
-def conn_4():
-    s = sp.Sphere(vertices = icosahedron_vertices, faces = faces, recursion_level = 4 )
+#def conn_4():
+#    s = sp.Sphere(vertices = icosahedron_vertices, faces = faces, recursion_level = 4 )
+#    
+#    s.construct_icosphere()
+#    x, y, z   = s.ch.points[s.ch.vertices][:,0],s.ch.points[s.ch.vertices][:,1], s.ch.points[s.ch.vertices][:,2]
+#    
+#    
+#    vertex1, vertex2, vertex3 = s.ch.points[s.ch.simplices[:,0]],s.ch.points[s.ch.simplices[:,1]], s.ch.points[s.ch.simplices[:,2]]# hull_pts[ch.simplices[:,1]], hull_pts[ch.simplices[:,2]]
+#    
+#    
+#    
+#    #CHANGE TO SPHERICAL POLARS
+#    sph_v_1 = s.sph_polar_convert(vertex1)
+#    sph_v_2 = s.sph_polar_convert(vertex2) 
+#    sph_v_3 = s.sph_polar_convert(vertex3) 
+#    
+#    phi_avg = (sph_v_1[:,2] + sph_v_2[:,2] + sph_v_3[:,2])/3.
+#               
+#    pent_faces, pent_ind = s.find_pentagon()
+#    
+#    val = 1
+#    phi_avg[pent_ind] = val
+#    phi_avg[phi_avg !=2] = 0
+#    
+#    next_tri, vconn = s.next_row_tri_v(pent_ind, pent_ind) #Defines vertical connections 
+#    phi_avg[next_tri] = val + 1
+#    face_cache = np.hstack((pent_ind, next_tri)) 
+#    next_tri2, hconn, x_v_conn=  s.next_row_tri_h(next_tri, face_cache) 
+#    vconn = vconn + x_v_conn
+#    phi_avg[next_tri2] = val + 1
+#    for i in range(21 + 21*(s.recursion_level-4)):
+#        
+#        face_cache = np.hstack((face_cache, next_tri2))
+#        next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
+#        phi_avg[next_tri3] = val + i + 2
+#        face_cache = np.hstack((face_cache, next_tri3))
+#        next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
+#        phi_avg[next_tri4] = val + i + 2
+#        next_tri2 = next_tri4
+#        vconn = vconn + vconn2 + x_v_conn#np.hstack((vconn, vconn2))
+#        #vconn = {**vconn, **vconn2}
+#        #hconn = {**hconn, **hconn2}
+#        hconn = hconn + hconn2#np.hstack((hconn, hconn2))
+#    
+#    face_cache = np.hstack((face_cache, next_tri2))
+#    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
+#    vconn = vconn + vconn2
+#    phi_avg[next_tri3] = val + 21 + 21*(s.recursion_level-4) + 2
+#    colours = phi_avg#sph_v_3[:,2] #Making the colors of the faces correspond to the value of the angle
+#    colours = phi_avg/sum(phi_avg)
+#    #rang =range(len(phi_avg));colours = np.array(rang)/sum(rang)
+#    
+#    #print("vconn", vconn)
+#    #print("hconn", hconn)
+#    s.plot_sphere(colours)   
+#    
+
+
+
+class Create_Sphere_and_Connections:
     
-    s.construct_icosphere()
-    x, y, z   = s.ch.points[s.ch.vertices][:,0],s.ch.points[s.ch.vertices][:,1], s.ch.points[s.ch.vertices][:,2]
     
+    def __init__(self):
+        
+        
+        
+        self.t = (1.0 + (5.0)**(0.5) )/ 2.0
+        
+        self.icosahedron_vertices = [[-1,  self.t,  0],
+                                    [ 1,  self.t,  0],
+                                    [-1, -self.t,  0],
+                                    [1, -self.t,  0],
+                                    [ 0, -1,  self.t],
+                                    [0,  1,  self.t],
+                                    [ 0, -1, -self.t],
+                                    [ 0,  1, -self.t],
+                                    [ self.t,  0, -1],
+                                    [self.t,  0,  1],
+                                    [-self.t,  0, -1],
+                                    [-self.t,  0,  1]]
     
-    vertex1, vertex2, vertex3 = s.ch.points[s.ch.simplices[:,0]],s.ch.points[s.ch.simplices[:,1]], s.ch.points[s.ch.simplices[:,2]]# hull_pts[ch.simplices[:,1]], hull_pts[ch.simplices[:,2]]
-    
-    
-    
-    #CHANGE TO SPHERICAL POLARS
-    sph_v_1 = s.sph_polar_convert(vertex1)
-    sph_v_2 = s.sph_polar_convert(vertex2) 
-    sph_v_3 = s.sph_polar_convert(vertex3) 
-    
-    phi_avg = (sph_v_1[:,2] + sph_v_2[:,2] + sph_v_3[:,2])/3.
-               
-    pent_faces, pent_ind = s.find_pentagon()
-    
-    val = 1
-    phi_avg[pent_ind] = val
-    phi_avg[phi_avg !=2] = 0
-    
-    next_tri, vconn = s.next_row_tri_v(pent_ind, pent_ind) #Defines vertical connections 
-    phi_avg[next_tri] = val + 1
-    face_cache = np.hstack((pent_ind, next_tri)) 
-    next_tri2, hconn, x_v_conn=  s.next_row_tri_h(next_tri, face_cache) 
-    vconn = vconn + x_v_conn
-    phi_avg[next_tri2] = val + 1
-    for i in range(21 + 21*(s.recursion_level-4)):
+        self.faces = np.array(
+                    [[0, 11, 5],
+                    [0, 5, 1],
+                    [0, 1, 7],
+                    [0, 7, 10],
+                    [0, 10, 11],
+                    [1, 5, 9],
+                    [5, 11, 4],
+                    [11, 10, 2],
+                    [10, 7, 6],
+                    [7, 1, 8],
+                    [3, 9, 4],
+                    [3, 4, 2],
+                    [3, 2, 6],
+                    [3, 6, 8],
+                    [3, 8, 9],
+                    [4, 9, 5],
+                    [2, 4, 11],
+                    [6, 2, 10],
+                    [8, 6, 7],
+                    [9, 8, 1]])
+        
+        self.s = sp.Sphere(vertices = self.icosahedron_vertices, faces = self.faces, recursion_level = 5 )
+        self.s.ch = self.s.construct_icosphere()
+        x, y, z   = self.s.ch.points[self.s.ch.vertices][:,0],self.s.ch.points[s.ch.vertices][:,1], self.s.ch.points[self.s.ch.vertices][:,2]
+        vertex1, vertex2, vertex3 = self.s.ch.points[self.s.ch.simplices[:,0]],self.s.ch.points[self.s.ch.simplices[:,1]], self.s.ch.points[self.s.ch.simplices[:,2]]# hull_pts[ch.simplices[:,1]], hull_pts[ch.simplices[:,2]]
+        
+        
+        
+        #CHANGE TO SPHERICAL POLARS
+        sph_v_1 = self.s.sph_polar_convert(vertex1)
+        sph_v_2 = self.s.sph_polar_convert(vertex2) 
+        sph_v_3 = self.s.sph_polar_convert(vertex3) 
+        
+        phi_avg = (sph_v_1[:,2] + sph_v_2[:,2] + sph_v_3[:,2])/3.
+        
+        #s.plot_sphere(phi_avg)
+                
+        pent_faces, self.pent_ind = self.s.find_pentagon()
+        
+        val = 1
+        phi_avg[self.pent_ind] = val
+        phi_avg[phi_avg !=2] = 0
+        
+        next_tri, vconn = self.s.next_row_tri_v(self.pent_ind, self.pent_ind) #Defines vertical connections 
+        
+        phi_avg[next_tri] = val + 1
+        face_cache = np.hstack((self.pent_ind, next_tri)) 
+        next_tri2, hconn, x_v_conn=  self.s.next_row_tri_h(next_tri, face_cache) 
+        vconn = vconn + x_v_conn
+        phi_avg[next_tri2] = val + 1
+        
+        for i in range(21*(self.s.recursion_level-3)+ 3):
+            
+            face_cache = np.hstack((face_cache, next_tri2))
+            next_tri3, vconn2 =  self.s.next_row_tri_v(next_tri2, face_cache)
+            phi_avg[next_tri3] = val + i + 2
+            face_cache = np.hstack((face_cache, next_tri3))
+            next_tri4, hconn2 , x_v_conn=  self.s.next_row_tri_h(next_tri3, face_cache)
+            phi_avg[next_tri4] = val + i + 2
+            next_tri2 = next_tri4
+            vconn = vconn + vconn2 + x_v_conn#np.hstack((vconn, vconn2))
+            #vconn = {**vconn, **vconn2}
+            #hconn = {**hconn, **hconn2}
+            self.hconn = hconn + hconn2#np.hstack((hconn, hconn2))
         
         face_cache = np.hstack((face_cache, next_tri2))
-        next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-        phi_avg[next_tri3] = val + i + 2
-        face_cache = np.hstack((face_cache, next_tri3))
-        next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-        phi_avg[next_tri4] = val + i + 2
-        next_tri2 = next_tri4
-        vconn = vconn + vconn2 + x_v_conn#np.hstack((vconn, vconn2))
-        #vconn = {**vconn, **vconn2}
-        #hconn = {**hconn, **hconn2}
-        hconn = hconn + hconn2#np.hstack((hconn, hconn2))
-    
-    face_cache = np.hstack((face_cache, next_tri2))
-    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-    vconn = vconn + vconn2
-    phi_avg[next_tri3] = val + 21 + 21*(s.recursion_level-4) + 2
-    colours = phi_avg#sph_v_3[:,2] #Making the colors of the faces correspond to the value of the angle
-    colours = phi_avg/sum(phi_avg)
-    #rang =range(len(phi_avg));colours = np.array(rang)/sum(rang)
-    
-    #print("vconn", vconn)
-    #print("hconn", hconn)
-    s.plot_sphere(colours)   
-    
-s = sp.Sphere(vertices = icosahedron_vertices, faces = faces, recursion_level = 5 )
-
-s.ch = s.construct_icosphere()
-
-x, y, z   = s.ch.points[s.ch.vertices][:,0],s.ch.points[s.ch.vertices][:,1], s.ch.points[s.ch.vertices][:,2]
+        next_tri3, vconn2 =  self.s.next_row_tri_v(next_tri2, face_cache)
+        self.vconn = vconn + vconn2
+        phi_avg[next_tri3] = val + 7*(self.s.recursion_level-1) + 2
+        
+        self.colours = phi_avg/sum(phi_avg)
 
 
-vertex1, vertex2, vertex3 = s.ch.points[s.ch.simplices[:,0]],s.ch.points[s.ch.simplices[:,1]], s.ch.points[s.ch.simplices[:,2]]# hull_pts[ch.simplices[:,1]], hull_pts[ch.simplices[:,2]]
+#####################################################################
 
-
-
-#CHANGE TO SPHERICAL POLARS
-sph_v_1 = s.sph_polar_convert(vertex1)
-sph_v_2 = s.sph_polar_convert(vertex2) 
-sph_v_3 = s.sph_polar_convert(vertex3) 
-
-phi_avg = (sph_v_1[:,2] + sph_v_2[:,2] + sph_v_3[:,2])/3.
-
-#s.plot_sphere(phi_avg)
-         
-pent_faces, pent_ind = s.find_pentagon()
-
-val = 1
-phi_avg[pent_ind] = val
-phi_avg[phi_avg !=2] = 0
-
-next_tri, vconn = s.next_row_tri_v(pent_ind, pent_ind) #Defines vertical connections 
-
-phi_avg[next_tri] = val + 1
-face_cache = np.hstack((pent_ind, next_tri)) 
-next_tri2, hconn, x_v_conn=  s.next_row_tri_h(next_tri, face_cache) 
-vconn = vconn + x_v_conn
-phi_avg[next_tri2] = val + 1
-
-for i in range(21*(s.recursion_level-3)+ 3):
-    
-    face_cache = np.hstack((face_cache, next_tri2))
-    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-    phi_avg[next_tri3] = val + i + 2
-    face_cache = np.hstack((face_cache, next_tri3))
-    next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-    phi_avg[next_tri4] = val + i + 2
-    next_tri2 = next_tri4
-    vconn = vconn + vconn2 + x_v_conn#np.hstack((vconn, vconn2))
-    #vconn = {**vconn, **vconn2}
-    #hconn = {**hconn, **hconn2}
-    hconn = hconn + hconn2#np.hstack((hconn, hconn2))
-
-face_cache = np.hstack((face_cache, next_tri2))
-next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-vconn = vconn + vconn2
-phi_avg[next_tri3] = val + 7*(s.recursion_level-1) + 2
-colours = phi_avg#sph_v_3[:,2] #Making the colors of the faces correspond to the value of the angle
-colours = phi_avg/sum(phi_avg)
-#rang =range(len(phi_avg));colours = np.array(rang)/sum(rang)
-
-#print("vconn", vconn)
-#print("hconn", hconn)
-#s.plot_sphere(colours)   
-
-#"""
-#animate
-
-n = create_network(array_nodesindices = np.arange(len(colours)),
-                   array_vertical = vconn,
-                   array_transv = hconn,
+h= Create_Sphere_and_Connections()
+n = create_network(array_nodesindices = np.arange(len(h.colours)),
+                   array_vertical = h.vconn,
+                   array_transv = h.hconn,
                    p_transv = 1,
-                   impulse_start = pent_ind,
+                   impulse_start = h.pent_ind,
                    p_dysf = 0.8,
                    p_unexcitable = 0.05)
-
 runc = run(network = n,
            plot=True,store=False,runs=30)
-runc.animator(s)
+runc.animator(h.s)
 #"""
 #colours = n.nodes
 #colours = colours/sum(colours)
