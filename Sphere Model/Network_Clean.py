@@ -62,7 +62,7 @@ class create_network:
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
         self.array_alltransv=array_transv
-               
+        self.colours=0
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
               self.array_transv.append(elements)
@@ -94,16 +94,51 @@ class create_network:
         
 
         newnodes=np.zeros(self.size)
-        time1=time.time()
-    
+       
         
         
         if len(self.excited)!=0:
             f = operator.itemgetter(*self.excited) # works well with list or array
+            
+            
+            self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
+            try:
+                self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
+            except TypeError:
+                self.excited=list(chain(self.excited))
+            
+        
+            newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
+            #need to account for repeated elements
+            
+            self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
+            self.unexcited[self.unexcited < self.p_unexcitable] = 1
+            self.unexcited[self.unexcited != 1] = 0
+           
+            
+            newnodes[newnodes>0]=1
+            newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
+            newnodes*= (self.nodes==0) #removes refractory cells
+        
+            self.excited=np.flatnonzero(newnodes)
+            self.excited=self.excited.tolist()
+    
+      
+        self.nodes-=1  
+        self.nodes[self.nodes==-1]=0
+        self.nodes += newnodes*self.excitation
+        print "excited cells are",self.excited
+     
+        
+    
+    def onestep_checktime(self):
+        
+        newnodes=np.zeros(self.size)
+        time1=time.time()
+        if len(self.excited)!=0:
+            f = operator.itemgetter(*self.excited) # works well with list or array
             time2=time.time()
             print("time taken",(time2-time1))
-            
-            
             self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
             try:
                 self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
@@ -140,6 +175,7 @@ class create_network:
         
         print ("total time", ( time7-time1))
    
+    
     def reinitialise(self):
         self.nodes=np.zeros(self.size)
        
@@ -171,9 +207,9 @@ class create_network:
 
 class run:
     
-    def __init__(self,network, plot=False,store=True,runs=5000):
+    def __init__(self, s,network, plot=False,store=True,runs=5000):
         
-        
+        self.s=s
         self.runs=runs   
         self.plot= plot
         self.store=store
@@ -183,53 +219,66 @@ class run:
         self.nodeshistory=[]
         self.excitedhistory=[]
         self.nodeshistory.append(self.network.nodes)
+        self.num_excited=[]
         
         
-    def propagate_n(self):
-        for times in range(self.runs):
-            if self.store==True:
+    def propagate_storage(self):
+        if self.store==True:
+            for times in range(self.runs):
                 
+                    
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
                     for elements in self.network.impulse_start:
                         self.network.excite(elements)
-                    
+                        
                 self.time+=1
                 self.network.totalruns+=1
                 self.excitedhistory.append(self.network.excited)
-            self.network.onestep()
+                self.num_excited.append(len(self.network.excited))
+                self.network.onestep()
+        else:
+            print "you set store==False"
             
-    def propagate_a(self):
+            
+    def propagate_plot(self):
         for times in range(self.runs):
-            if self.store==True:
-                
-                if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
-                    for elements in self.network.impulse_start:
-                        self.network.excite(elements)
+            
+            if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
+                for elements in self.network.impulse_start:
+                    self.network.excite(elements)
                     
                 self.time+=1
                 self.network.totalruns+=1
-                self.excitedhistory.append(self.network.excited)
             self.network.onestep()
             colours = self.network.nodes
             colours = colours/sum(colours) 
             yield colours
     
-    def animator(self,sph):
-        self.sph = sph
+    def animator(self):
+   
         if self.plot == True:
-            self.surf, self.fig = self.plot_sphere_a(sph)
-            self.sph = sph
-            colours = self.propagate_a()
-            self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
+            if self.store==True:
+                print"you are storing the data"
+            else:
+                print"you are not storing the data"
+                
+            self.surf, self.fig = self.plot_sphere(self.s)
+            self.sph = self.s
+            self.colours = self.propagate_plot()
+            self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (self.colours, self.surf),
                     frames=self.runs, interval=25, blit=False)
             plt.show()
+        else:
+            print "you set plot==False"
+                
+            
           
             
                 
                    
                 
                 
-    def plot_sphere_a(self, sph):
+    def plot_sphere(self, sph):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')
         self.x, self.y, self.z   = sph.ch.points[sph.ch.vertices][:,0],sph.ch.points[sph.ch.vertices][:,1], sph.ch.points[sph.ch.vertices][:,2]
@@ -250,15 +299,15 @@ class run:
                 
         self.time+=1
         self.network.totalruns+=1
-        self.excitedhistory.append(self.network.excited)
         self.network.onestep()
-        colours = self.network.nodes
-        colours = colours/sum(colours) 
+        
+        self.colours = self.network.nodes
+        self.colours = self.colours/sum(self.colours) 
         
         
         self.ax.clear()
         self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
-        self.surf.set_array(colours)
+        self.surf.set_array(self.colours)
         
         return self.surf,
         
@@ -305,7 +354,7 @@ class Define_Connections:
       
 
 
-s = sp.Sphere( recursion_level = 5 )
+s = sp.Sphere( recursion_level = 4 )
 conn = Define_Connections(s)
 n = create_network(array_nodesindices = np.arange(len(conn.colours)),
                    array_vertical = conn.vconn,
@@ -315,8 +364,12 @@ n = create_network(array_nodesindices = np.arange(len(conn.colours)),
                    p_dysf = 0.1,
                    p_unexcitable = 0.05)
 
-runc = run(network = n, plot=True,store=False,runs=30)
-runc.animator(s)
+runc = run(s,network = n, plot=True,store=False,runs=100)
+runc.animator()
+#runc = run(s,network = n, plot=False,store=True,runs=1000)
+#runc.propagate_storage()
+
+
 
 
 
