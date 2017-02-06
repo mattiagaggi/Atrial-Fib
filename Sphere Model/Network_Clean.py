@@ -186,7 +186,7 @@ class run:
         
         
     def propagate_n(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -199,7 +199,7 @@ class run:
             self.network.onestep()
             
     def propagate_a(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -265,42 +265,6 @@ class run:
 
 
 
-t = (1.0 + (5.0)**(0.5) )/ 2.0
-
-icosahedron_vertices = [[-1,  t,  0],
-                            [ 1,  t,  0],
-                            [-1, -t,  0],
-                            [1, -t,  0],
-                            [ 0, -1,  t],
-                            [0,  1,  t],
-                            [ 0, -1, -t],
-                            [ 0,  1, -t],
-                            [ t,  0, -1],
-                            [t,  0,  1],
-                            [-t,  0, -1],
-                            [-t,  0,  1]]
-
-faces = np.array(
-            [[0, 11, 5],
-            [0, 5, 1],
-            [0, 1, 7],
-            [0, 7, 10],
-            [0, 10, 11],
-            [1, 5, 9],
-            [5, 11, 4],
-            [11, 10, 2],
-            [10, 7, 6],
-            [7, 1, 8],
-            [3, 9, 4],
-            [3, 4, 2],
-            [3, 2, 6],
-            [3, 6, 8],
-            [3, 8, 9],
-            [4, 9, 5],
-            [2, 4, 11],
-            [6, 2, 10],
-            [8, 6, 7],
-            [9, 8, 1]])
 
 def num_func(recursion_level):
     t_0 = 3
@@ -309,43 +273,45 @@ def num_func(recursion_level):
         t_0 = t_n
     return t_n
    
-def define_connections(s):
-    
-    s.construct_icosphere()
-    x, y, z   = s.ch.points[s.ch.vertices][:,0],s.ch.points[s.ch.vertices][:,1], s.ch.points[s.ch.vertices][:,2]
-    vertex1 = s.ch.points[s.ch.simplices[:,0]]
-    colours = vertex1
-    pent_faces, pent_ind = s.find_pentagon()
-    next_tri, vconn = s.next_row_tri_v(pent_ind, pent_ind) #Defines vertical connections 
-    face_cache = np.hstack((pent_ind, next_tri)) 
-    next_tri2, hconn, x_v_conn=  s.next_row_tri_h(next_tri, face_cache) 
-    vconn = vconn + x_v_conn
-       
-    rang_val = num_func(s.recursion_level)
-    for i in range(rang_val):
+class Define_Connections:
+    def __init__(self,s):
+
+        self.s=s
+        self.s.construct_icosphere()
+        x, y, z   = self.s.ch.points[self.s.ch.vertices][:,0],self.s.ch.points[self.s.ch.vertices][:,1], self.s.ch.points[self.s.ch.vertices][:,2]
+        vertex1 = self.s.ch.points[self.s.ch.simplices[:,0]]
+        self.colours = vertex1
+        pent_faces, self.pent_ind = self.s.find_pentagon()
+        next_tri, vconn = self.s.next_row_tri_v(self.pent_ind, self.pent_ind) #Defines vertical connections 
+        face_cache = np.hstack((self.pent_ind, next_tri)) 
+        next_tri2, self.hconn, x_v_conn=  self.s.next_row_tri_h(next_tri, face_cache) 
+        vconn = vconn + x_v_conn
+        
+        rang_val = num_func(self.s.recursion_level)
+        for i in range(rang_val):
+            face_cache = np.hstack((face_cache, next_tri2))
+            next_tri3, vconn2 =  self.s.next_row_tri_v(next_tri2, face_cache)
+            face_cache = np.hstack((face_cache, next_tri3))
+            next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
+            next_tri2 = next_tri4
+            vconn = vconn + vconn2 + x_v_conn
+            self.hconn = self.hconn + hconn2
+        
         face_cache = np.hstack((face_cache, next_tri2))
         next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-        face_cache = np.hstack((face_cache, next_tri3))
-        next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-        next_tri2 = next_tri4
-        vconn = vconn + vconn2 + x_v_conn
-        hconn = hconn + hconn2
-    
-    face_cache = np.hstack((face_cache, next_tri2))
-    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-    vconn = vconn + vconn2
-    
-    return colours, vconn, hconn, pent_ind
+        self.vconn = vconn + vconn2
+        
+      
 
 
-s = sp.Sphere(vertices = icosahedron_vertices, faces = faces, recursion_level = 5 )
-colours, vconn, hconn, pent_ind = define_connections(s)
+s = sp.Sphere( recursion_level = 5 )
+conn = Define_Connections(s)
 
-n = create_network(array_nodesindices = np.arange(len(colours)),
-                   array_vertical = vconn,
-                   array_transv = hconn,
+n = create_network(array_nodesindices = np.arange(len(conn.colours)),
+                   array_vertical = conn.vconn,
+                   array_transv = conn.hconn,
                    p_transv = 0.5,
-                   impulse_start = pent_ind,
+                   impulse_start = conn.pent_ind,
                    p_dysf = 0.1,
                    p_unexcitable = 0.05)
 
