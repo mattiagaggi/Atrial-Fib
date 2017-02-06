@@ -266,12 +266,7 @@ class run:
 
 
 
-def num_func(recursion_level):
-    t_0 = 3
-    for x in range(recursion_level-2):
-        t_n = 2*t_0 + 3
-        t_0 = t_n
-    return t_n
+
    
 class Define_Connections:
     def __init__(self,s):
@@ -287,7 +282,7 @@ class Define_Connections:
         next_tri2, self.hconn, x_v_conn=  self.s.next_row_tri_h(next_tri, face_cache) 
         vconn = vconn + x_v_conn
         
-        rang_val = num_func(self.s.recursion_level)
+        rang_val = self.num_func()
         for i in range(rang_val):
             face_cache = np.hstack((face_cache, next_tri2))
             next_tri3, vconn2 =  self.s.next_row_tri_v(next_tri2, face_cache)
@@ -300,13 +295,18 @@ class Define_Connections:
         face_cache = np.hstack((face_cache, next_tri2))
         next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
         self.vconn = vconn + vconn2
-        
+    
+    def num_func(self):
+        t_0 = 3
+        for x in range(self.s.recursion_level-2):
+            t_n = 2*t_0 + 3
+            t_0 = t_n
+        return t_n
       
 
 
 s = sp.Sphere( recursion_level = 5 )
 conn = Define_Connections(s)
-
 n = create_network(array_nodesindices = np.arange(len(conn.colours)),
                    array_vertical = conn.vconn,
                    array_transv = conn.hconn,
