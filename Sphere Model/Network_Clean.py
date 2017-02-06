@@ -7,7 +7,8 @@ from matplotlib import animation
 from matplotlib import pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
-
+                
+import ico_propagation as sp
 def decision(p):
     if np.random.random()<p:
         return True
@@ -261,8 +262,7 @@ class run:
         
         return self.surf,
         
-                
-import ico_propagation as sp
+
 
 
 t = (1.0 + (5.0)**(0.5) )/ 2.0
