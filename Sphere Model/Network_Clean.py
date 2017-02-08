@@ -354,22 +354,24 @@ class Define_Connections:
       
 
 
-s = sp.Sphere( recursion_level = 4 )
+s = sp.Sphere( recursion_level = 5 )
 conn = Define_Connections(s)
 n = create_network(array_nodesindices = np.arange(len(conn.colours)),
                    array_vertical = conn.vconn,
                    array_transv = conn.hconn,
-                   p_transv = 0.5,
+                   p_transv = 0.1,
                    impulse_start = conn.pent_ind,
-                   p_dysf = 0.1,
-                   p_unexcitable = 0.05)
+                   p_dysf = 0,
+                   p_unexcitable = 0)
 
-runc = run(s,network = n, plot=True,store=False,runs=100)
+
+runc = run(s,network = n, plot=True,store=False,runs=10000)
 runc.animator()
-#runc = run(s,network = n, plot=False,store=True,runs=1000)
+#runc = run(s,network = n, plot=False,store=True,runs=10000)
 #runc.propagate_storage()
 
-
+#plt.plot(range(runc.runs),runc.num_excited)
+#plt.show
 
 
 
