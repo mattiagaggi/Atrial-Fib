@@ -236,7 +236,7 @@ class Sphere:
     
     def next_row_tri_v(self,  tri_index, tri_ind_cache):
         
-        idx = range(len(self.ch.simplices))
+        
         neighbours = self.ch.neighbors[tri_index]
         flat_neigh = neighbours.flatten()
         diff_list = []
@@ -254,7 +254,7 @@ class Sphere:
         
     def next_row_tri_h(self,  tri_index, tri_ind_cache):
         
-        idx = range(len(self.ch.simplices))
+      
         neighbours = self.ch.neighbors[tri_index]
         flat_neigh = neighbours.flatten()
         diff_list = []
