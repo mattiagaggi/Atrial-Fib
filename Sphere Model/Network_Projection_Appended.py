@@ -228,7 +228,7 @@ class run:
         
         
     def propagate_n(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -241,7 +241,7 @@ class run:
             self.network.onestep()
             
     def propagate_a(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -284,8 +284,9 @@ class run:
         self.ax.set_zlim(-0.55, 0.55)
         """
     
-        #self.x, self.y, self.z   = sph.ch.points[sph.ch.vertices][:,0],sph.ch.points[sph.ch.vertices][:,1], sph.ch.points[sph.ch.vertices][:,2]
-        self.x, self.y = sph.Mercator_Projection()#sph.Mollewide_Projection()
+        self.x, self.y, self.z   = sph.ch.points[sph.ch.vertices][:,0],sph.ch.points[sph.ch.vertices][:,1], sph.ch.points[sph.ch.vertices][:,2]
+        
+        #self.x, self.y = sph.Mercator_Projection()#sph.Mollewide_Projection()
         self.z = np.zeros(self.x.shape)
         
         self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
@@ -442,6 +443,7 @@ class Define_Connections:
         #ax2.plot(phi_avg[:,0], phi_avg[:,1], phi_avg[:,2], 'r', markersize=1)
         ax2.add_collection(lc1)
         ax2.add_collection(lc2)
+        plt.show()
 
 
 
@@ -481,9 +483,10 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    p_unexcitable = 0.05,
                    excitation = 25, 
                    hbs = 110)
+"""
 runc = run(network = n, plot=True,store=False,runs=1000)
 runc.animator(s)
-
+"""
 
 #conn.connectome() #visualisation of connections, as you've seen
 
