@@ -19,6 +19,9 @@ def decision(p):
         return True
     else:
         return False
+
+
+
 def trial():
     nodes=range(40000)
     a=np.arange(40000)
@@ -67,7 +70,8 @@ class create_network:
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
         self.array_alltransv=array_transv
-        self.colours=0
+       
+        
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
               self.array_transv.append(elements)
@@ -225,46 +229,45 @@ class run:
         self.nodeshistory=[]
         self.excitedhistory=[]
         self.nodeshistory.append(self.network.nodes)
+        self.num_excited=[]
+        
+        self.zeroexcited=[]
         
         
-    def propagate_n(self):
+    def propagate_storage(self):
+      
+        print "you set store==", self.store
         for times in range(self.runs):
-            if self.store==True:
                 
-                if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
-                    for elements in self.network.impulse_start:
-                        self.network.excite(elements)
+            if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
+                for elements in self.network.impulse_start:
+                    self.network.excite(elements)
                     
-                self.time+=1
-                self.network.totalruns+=1
-                self.excitedhistory.append(self.network.excited)
-            self.network.onestep()
-            
-    def propagate_a(self):
-        for times in range(self.runs):
+            self.time+=1
+            self.network.totalruns+=1
             if self.store==True:
-                
-                if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
-                    for elements in self.network.impulse_start:
-                        self.network.excite(elements)
-                    
-                self.time+=1
-                self.network.totalruns+=1
                 self.excitedhistory.append(self.network.excited)
+                self.num_excited.append(len(self.network.excited))
+                if self.num_excited[-1]==0:
+                    self.zeroexcited.append(self.time)
+                
             self.network.onestep()
-            colours = self.network.nodes
-            colours = colours/sum(colours) 
-            yield colours
+ 
     
     def animator(self,sph):
+        
+        print "you set store==",self.store
         self.sph = sph
-        if self.plot == True:
-            self.surf, self.fig = self.plot_sphere_a(sph)
-            self.sph = sph
-            colours = self.propagate_a()
-            self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
-                    frames=self.runs, interval=25, blit=False)
-            plt.show()
+
+        self.surf, self.fig = self.plot_sphere_a(sph)
+        self.sph = sph
+        self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
+                frames=self.runs, interval=25, blit=False)
+        if self.store==True:
+                self.excitedhistory.append(self.network.excited)
+                self.num_excited.append(len(self.network.excited))
+        plt.show()
+
           
             
                 
@@ -273,6 +276,7 @@ class run:
                 
     def plot_sphere_a(self, sph):
         self.fig = plt.figure()
+        
         #self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
         self.ax = self.fig.add_subplot(111, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
         self.ax.view_init(elev=90., azim=0)
@@ -306,7 +310,8 @@ class run:
                 
         self.time+=1
         self.network.totalruns+=1
-        self.excitedhistory.append(self.network.excited)
+        if self.store==True:
+            self.excitedhistory.append(self.network.excited)
         self.network.onestep()
         colours = self.network.nodes
         colours = colours/sum(colours) 
@@ -322,6 +327,7 @@ class run:
         """
         print("time", self.time)
         return self.surf,
+    
         
                 
 
@@ -352,24 +358,7 @@ class Define_Connections:
         face_cache = np.hstack((pent_ind, next_tri)) 
         next_tri2, hconn, x_v_conn=  self.s.next_row_tri_h(next_tri, face_cache) 
         vconn = vconn + x_v_conn
-        """
-        face_cache = np.hstack((face_cache, next_tri2))
-        next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-        face_cache = np.hstack((face_cache, next_tri3))
-        next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-        next_tri2 = next_tri4
-        vconn = vconn + vconn2 + x_v_conn
-        hconn = hconn + hconn2
-        """
-        """
-        face_cache = np.hstack((face_cache, next_tri2))
-        next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-        face_cache = np.hstack((face_cache, next_tri3))
-        next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-        next_tri2 = next_tri4
-        vconn = vconn + vconn2 + x_v_conn
-        hconn = hconn + hconn2
-        """
+
         self.startimp = np.hstack((face_cache, next_tri2))
            
         rang_val = int((self.num_func(self.s.recursion_level)+1)/2.)  #-2
@@ -468,7 +457,7 @@ colours=pickle.load(g)
 
 """
 
-s = sp.Sphere( recursion_level = 5 )
+s = sp.Sphere( recursion_level = 6 )
 conn = Define_Connections(s)
 colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
@@ -477,16 +466,45 @@ colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 0.15,
+                   p_transv = 0.1,
                    impulse_start = pent_ind,
-                   p_dysf = 0.05,
-                   p_unexcitable = 0.05,
-                   excitation = 25, 
-                   hbs = 110)
-"""
+                   p_dysf = 0.1,
+                   p_unexcitable = 0.1,
+                   excitation = 126, 
+                   hbs = 25)
+
 runc = run(network = n, plot=True,store=False,runs=1000)
 runc.animator(s)
+
+#for storing data instead
+#runc = run(network = n, plot=False,store=True,runs=1000)
+#runc.propagate_storage()
+
+
 """
+for recursion 5 
+the path from the top to the bottom is 47
+and the width of the equator 150 
+
+instead of coarse graining the model by 5 as in Kims we coarse grain it by 25 (we have 47 instead of 200)
+this gives refractory period equal to 10 and excitation of 44( using T=660ms)
+this gives refractory period equal to 10 and excitation of 50( using T=760ms)
+
+"""
+
+"""
+for recursion 6 
+the path from the top to the bottom is 97
+and the width of the equator 320
+
+instead of coarse graining the model by 5 as in Kims we coarse grain it by 10 (we have 97 instead of 200)
+this gives refractory period equal to 25 and excitation of 110( using T=660ms)
+this gives refractory period equal to 25 and excitation of 126( using T=760ms)
+
+"""
+
+
+
 
 #conn.connectome() #visualisation of connections, as you've seen
 
