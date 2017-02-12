@@ -11,8 +11,8 @@ import pylab as pl
 from matplotlib import collections  as mc
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import types
-import pickle
-
+import pickle              
+import ico_prop_projection as sp
 
 def decision(p):
     if np.random.random()<p:
@@ -99,14 +99,11 @@ class create_network:
         
 
         newnodes=np.zeros(self.size)
-        time1=time.time()
-    
+       
         
         
         if len(self.excited)!=0:
             f = operator.itemgetter(*self.excited) # works well with list or array
-            time2=time.time()
-            #print("time taken",(time2-time1))
             
             
             self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
@@ -114,19 +111,57 @@ class create_network:
                 self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
             except TypeError:
                 self.excited=list(chain(self.excited))
+            
+        
+            newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
+            #need to account for repeated elements
+            
+            self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
+            self.unexcited[self.unexcited < self.p_unexcitable] = 1
+            self.unexcited[self.unexcited != 1] = 0
+           
+            
+            newnodes[newnodes>0]=1
+            newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
+            newnodes*= (self.nodes==0) #removes refractory cells
+        
+            self.excited=np.flatnonzero(newnodes)
+            self.excited=self.excited.tolist()
+    
+      
+        self.nodes-=1  
+        self.nodes[self.nodes==-1]=0
+        self.nodes += newnodes*self.excitation
+        print "excited cells are",self.excited
+     
+        
+    
+    def onestep_checktime(self):
+        
+        newnodes=np.zeros(self.size)
+        time1=time.time()
+        if len(self.excited)!=0:
+            f = operator.itemgetter(*self.excited) # works well with list or array
+            time2=time.time()
+            print("time taken",(time2-time1))
+            self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
+            try:
+                self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
+            except TypeError:
+                self.excited=list(chain(self.excited))
             time3=time.time()
-            #print("time taken",(time3-time2)) #seems quick but can improve
+            print("time taken",(time3-time2)) #seems quick but can improve
         
             newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
             #need to account for repeated elements
             time4=time.time()
-            #print("time taken",(time4-time3))
+            print("time taken",(time4-time3))
         
             self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
             self.unexcited[self.unexcited < self.p_unexcitable] = 1
             self.unexcited[self.unexcited != 1] = 0
             time5=time.time()
-            #("time taken",(time5-time4))
+            print("time taken",(time5-time4))
             
             newnodes[newnodes>0]=1
             newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
@@ -139,11 +174,11 @@ class create_network:
         self.nodes-=1  
         self.nodes[self.nodes==-1]=0
         self.nodes += newnodes*self.excitation
-        #print (np.flatnonzero(self.nodes))
+        print (np.flatnonzero(self.nodes))
         time7=time.time()
-        #print("time taken",(time7-time6))
+        print("time taken",(time7-time6))
         
-        #print ("total time", ( time7-time1))
+        print ("total time", ( time7-time1))
    
     def reinitialise(self):
         self.nodes=np.zeros(self.size)
@@ -190,30 +225,33 @@ class run:
         self.nodeshistory.append(self.network.nodes)
         
         
-    def propagate_n(self):
-        for times in range(runs):
-            if self.store==True:
+    def propagate_storage(self):
+        if self.store==True:
+            for times in range(self.runs):
                 
+                    
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
                     for elements in self.network.impulse_start:
                         self.network.excite(elements)
-                    
+                        
                 self.time+=1
                 self.network.totalruns+=1
                 self.excitedhistory.append(self.network.excited)
-            self.network.onestep()
+                self.num_excited.append(len(self.network.excited))
+                self.network.onestep()
+        else:
+            print "you set store==False"
             
-    def propagate_a(self):
-        for times in range(runs):
-            if self.store==True:
-                
-                if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
-                    for elements in self.network.impulse_start:
-                        self.network.excite(elements)
+            
+    def propagate_plot(self):
+        for times in range(self.runs):
+            
+            if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
+                for elements in self.network.impulse_start:
+                    self.network.excite(elements)
                     
                 self.time+=1
                 self.network.totalruns+=1
-                self.excitedhistory.append(self.network.excited)
             self.network.onestep()
             colours = self.network.nodes
             colours = colours/sum(colours) 
@@ -224,7 +262,7 @@ class run:
         if self.plot == True:
             self.surf, self.fig = self.plot_sphere_a(sph)
             self.sph = sph
-            colours = self.propagate_a()
+            colours = self.propagate_plot()
             self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
                     frames=self.runs, interval=25, blit=False)
             plt.show()
@@ -284,46 +322,8 @@ class run:
         print("time", self.time)
         return self.surf,
         
-                
-import ico_prop_projection as sp
 
 
-t = (1.0 + (5.0)**(0.5) )/ 2.0
-
-icosahedron_vertices = [[-1,  t,  0],
-                            [ 1,  t,  0],
-                            [-1, -t,  0],
-                            [1, -t,  0],
-                            [ 0, -1,  t],
-                            [0,  1,  t],
-                            [ 0, -1, -t],
-                            [ 0,  1, -t],
-                            [ t,  0, -1],
-                            [t,  0,  1],
-                            [-t,  0, -1],
-                            [-t,  0,  1]]
-
-faces = np.array(
-            [[0, 11, 5],
-            [0, 5, 1],
-            [0, 1, 7],
-            [0, 7, 10],
-            [0, 10, 11],
-            [1, 5, 9],
-            [5, 11, 4],
-            [11, 10, 2],
-            [10, 7, 6],
-            [7, 1, 8],
-            [3, 9, 4],
-            [3, 4, 2],
-            [3, 2, 6],
-            [3, 6, 8],
-            [3, 8, 9],
-            [4, 9, 5],
-            [2, 4, 11],
-            [6, 2, 10],
-            [8, 6, 7],
-            [9, 8, 1]])
 
 def num_func(recursion_level):
     t_0 = 3
@@ -343,24 +343,7 @@ def define_connections(s):
     face_cache = np.hstack((pent_ind, next_tri)) 
     next_tri2, hconn, x_v_conn=  s.next_row_tri_h(next_tri, face_cache) 
     vconn = vconn + x_v_conn
-    """
-    face_cache = np.hstack((face_cache, next_tri2))
-    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-    face_cache = np.hstack((face_cache, next_tri3))
-    next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-    next_tri2 = next_tri4
-    vconn = vconn + vconn2 + x_v_conn
-    hconn = hconn + hconn2
-    """
-    """
-    face_cache = np.hstack((face_cache, next_tri2))
-    next_tri3, vconn2 =  s.next_row_tri_v(next_tri2, face_cache)
-    face_cache = np.hstack((face_cache, next_tri3))
-    next_tri4, hconn2 , x_v_conn=  s.next_row_tri_h(next_tri3, face_cache)
-    next_tri2 = next_tri4
-    vconn = vconn + vconn2 + x_v_conn
-    hconn = hconn + hconn2
-    """
+
     startimp = np.hstack((face_cache, next_tri2))
        
     rang_val = int((num_func(s.recursion_level)+1)/2.)  #-2
@@ -437,7 +420,7 @@ def connectome(s):
 
 
 
-s = sp.Sphere(vertices = icosahedron_vertices, faces = faces, recursion_level = 5 )
+s = sp.Sphere( recursion_level = 5 )
 #
 """
 s.construct_icosphere()
@@ -492,10 +475,10 @@ fileobjsph.close()
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 0.15,
+                   p_transv = 1,
                    impulse_start = pent_ind,
-                   p_dysf = 0.05,
-                   p_unexcitable = 0.05,
+                   p_dysf = 1,
+                   p_unexcitable = 1,
                    excitation = 25, 
                    hbs = 110)
 runc = run(network = n, plot=True,store=False,runs=1000)
