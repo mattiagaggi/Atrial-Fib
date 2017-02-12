@@ -112,11 +112,11 @@ class Sphere:
             vert_list.append(a)
             vert_list.append(b)
             vert_list.append(c)
-            #if v0marker + bmarker + amarker == 0:
+           
             new_faces.append([v0, b, a])
-            #if bmarker + v1marker + cmarker == 0:
+            
             new_faces.append([b,v1,c])
-            #if amarker + bmarker + cmarker == 0
+            
             new_faces.append([a,b,c])
             new_faces.append([a,c,v2])
     
@@ -144,11 +144,15 @@ class Sphere:
         return ptsnew  
     
     def unique_rows(self, a):
+        "finds unique elements on dim=1 of an array????" 
+        
         a = np.ascontiguousarray(a)
         unique_a = np.unique(a.view([('', a.dtype)]*a.shape[1]))
         return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))
     
     def unique(self, a):
+        "finds unique elements on dim=1 of an array"
+        
         order = np.lexsort(a.T)
         a = a[order]
         diff = np.diff(a, axis=0)
@@ -157,6 +161,7 @@ class Sphere:
         return a[ui]
         
     def merge(self, a, b):
+        "merges two lists without repetition"
         max_offset = len(b)  # can't overlap with greater size than len(b)
         for i in reversed(range(max_offset+1)):
             # checks for equivalence of decreasing sized slices
@@ -175,7 +180,7 @@ class Sphere:
         return [x for x in seq if (x in seen or seen_add(x))]
         
         
-    def facet_ncheck(self,  facet_index, common_pt):#, f_list):
+    def facet_ncheck(self,  facet_index, common_pt):
                 
         nind = self.ch.neighbors[facet_index] #indices of the neighbouring facets
         facet1, facet2, facet3 = self.ch.simplices[nind[0]], self.ch.simplices[nind[1]], self.ch.simplices[nind[2]]  #facets 1,2 & 3
@@ -204,7 +209,8 @@ class Sphere:
         
         
             
-    def find_pentagon(self):       
+    def find_pentagon(self):    
+        """ ask Tig, what is it doing????"""   
         
         for i in range(len(self.ch.simplices)):
             for point in self.ch.simplices[i]: 
@@ -223,7 +229,7 @@ class Sphere:
         
         for i in range(len(self.ch.simplices)):
             for point in self.ch.simplices[i]: 
-                if np.all(self.ch.points[point] == commonpt): #means that point belongs to a pentaagon
+                if np.all(self.ch.points[point] == commonpt): 
                     s_facet = self.ch.simplices[i]
                     facet_nlist, neigh_ind = self.facet_ncheck( facet_index =i, common_pt =commonpt)
                     while len(neigh_ind) < 7:
@@ -254,7 +260,7 @@ class Sphere:
         
     def next_row_tri_h(self,  tri_index, tri_ind_cache):
         
-      
+        """Ask Tig"""
         neighbours = self.ch.neighbors[tri_index]
         flat_neigh = neighbours.flatten()
         diff_list = []
@@ -313,6 +319,9 @@ class Sphere:
         
         plt.show()
         return surf
+    
+    
+    
     """
             
         if self.plot or self.replot:
@@ -418,6 +427,6 @@ colours[l] = 1
 colours[colours != 1] = 0
 colours = colours/sum(colours)
 suf =s.plot_sphere(colours)   
-
 """
+
     

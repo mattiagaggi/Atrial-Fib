@@ -2,7 +2,7 @@ import FinalAF
 import numpy as np
 from matplotlib import pyplot as plt
 import pickle
-from matplotlib import pyplot as plts
+
 #Kishan'f Data
 kishmatrix = np.array([[0.02,0.99981,4.3015e-06],
 [0.04,0.99983,3.8088e-06],

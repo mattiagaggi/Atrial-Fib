@@ -9,6 +9,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
                 
 import ico_propagation as sp
+
 def decision(p):
     if np.random.random()<p:
         return True
@@ -312,12 +313,10 @@ class run:
         return self.surf,
         
 
-
-
-
-
    
 class Define_Connections:
+    
+    
     def __init__(self,s):
 
         self.s=s
@@ -353,7 +352,9 @@ class Define_Connections:
         return t_n
       
 
+"""    
 
+#this creates the sphere and the NetworK
 s = sp.Sphere( recursion_level = 5 )
 conn = Define_Connections(s)
 n = create_network(array_nodesindices = np.arange(len(conn.colours)),
@@ -364,14 +365,15 @@ n = create_network(array_nodesindices = np.arange(len(conn.colours)),
                    p_dysf = 0,
                    p_unexcitable = 0)
 
-
+# this runs animatiton
 runc = run(s,network = n, plot=True,store=False,runs=10000)
 runc.animator()
-#runc = run(s,network = n, plot=False,store=True,runs=10000)
-#runc.propagate_storage()
 
-#plt.plot(range(runc.runs),runc.num_excited)
-#plt.show
+#this stores data
+runc = run(s,network = n, plot=False,store=True,runs=10000)
+runc.propagate_storage()
+"""
+
 
 
 
