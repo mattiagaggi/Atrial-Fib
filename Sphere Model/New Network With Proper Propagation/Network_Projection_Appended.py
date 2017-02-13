@@ -470,15 +470,15 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    impulse_start = pent_ind,
                    p_dysf = 0,
                    p_unexcitable = 0,
-                   excitation = 13, 
-                   hbs = 55)
+                   excitation = 55, 
+                   hbs = 13)
 
 #runc = run(network = n, plot=True,store=True,runs=1000)
 #runc.animator(s)
 
 #for storing data instead
-#runc = run(network = n, plot=False,store=True,runs=1000)
-#runc.propagate_storage()
+runc = run(network = n, plot=False,store=True,runs=1000)
+runc.propagate_storage()
 
 
 """
