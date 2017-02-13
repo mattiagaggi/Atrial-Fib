@@ -28,7 +28,7 @@ class Sphere:
                                     [self.t,  0,  1],
                                     [-self.t,  0, -1],
                                     [-self.t,  0,  1]]
-        
+        self.face_cache = []
         self.faces = np.array(
                     [[0, 11, 5],
                     [0, 5, 1],
@@ -58,7 +58,13 @@ class Sphere:
         
         
         self.recursion_level = recursion_level
+        self.sph_vert=0  #  -- same as self.ch.points
+        self.sph_tri=0   # faces as triangles of coordinates
+        
         self.ch = [] #storage for convex hull
+        #self.ch.simplices  faces stored as indices
+        #self.ch.points   points stores as coors
+        
         self.pentpointold = [] #stores old pentagon points
 
 
@@ -345,17 +351,17 @@ class Sphere:
         '''Makes the icosphere using convex hull'''
         self.icosahedron_vertices = self.normalize_v3(np.array(self.icosahedron_vertices)) #normalizing icosahedron vertices of unit sphere
         self.icosahedron_vertices.tolist()
-        face_cache = []
+        
         for face in self.faces:
             new_face_vert = [self.icosahedron_vertices[face[0]], self.icosahedron_vertices[face[1]], self.icosahedron_vertices[face[2]]]
-            face_cache.append(new_face_vert)
-        self.faces = np.asarray(face_cache ) #this is an array of points that correspond the icosahedron faces
+            self.face_cache.append(new_face_vert)
+        self.faces = np.asarray(self.face_cache ) #this is an array of points that correspond the icosahedron faces
     
-        sph_vert, sph_tri = self.create_unit_sphere_vert()
+        self.sph_vert, self.sph_tri = self.create_unit_sphere_vert()
 
-        self.ch = ConvexHull(sph_vert) #initial convex hull, but has too many input points as recursive sphere algoorithm produces repeat points
+        self.ch = ConvexHull(self.sph_vert) #initial convex hull, but has too many input points as recursive sphere algoorithm produces repeat points
         self.ch = ConvexHull(self.ch.points[self.ch.vertices])# the right convex hull with points corresponding to vertices perfectly
-        return self.ch
+        #return self.ch
 
     def plot_sphere(self, colours):
         fig = plt.figure()

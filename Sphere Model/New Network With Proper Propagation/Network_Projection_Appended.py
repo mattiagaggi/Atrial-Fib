@@ -466,15 +466,15 @@ colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 0.1,
+                   p_transv = 1,
                    impulse_start = pent_ind,
-                   p_dysf = 0.1,
-                   p_unexcitable = 0.1,
-                   excitation = 126, 
-                   hbs = 25)
+                   p_dysf = 0,
+                   p_unexcitable = 0,
+                   excitation = 13, 
+                   hbs = 55)
 
-runc = run(network = n, plot=True,store=False,runs=1000)
-runc.animator(s)
+#runc = run(network = n, plot=True,store=True,runs=1000)
+#runc.animator(s)
 
 #for storing data instead
 #runc = run(network = n, plot=False,store=True,runs=1000)
