@@ -486,9 +486,9 @@ for recursion 5
 the path from the top to the bottom is 47
 and the width of the equator 150 
 
-instead of coarse graining the model by 5 as in Kims we coarse grain it by 25 (we have 47 instead of 200)
-this gives refractory period equal to 10 and excitation of 44( using T=660ms)
-this gives refractory period equal to 10 and excitation of 50( using T=760ms)
+instead of coarse graining the model by 5 as in Kims we coarse grain it by 20 (we have 47 instead of 200)
+this gives refractory period equal to 13(12.5) and excitation of 55( using T=660ms)
+this gives refractory period equal to 13 and excitation of 63( using T=760ms)
 
 """
 
