@@ -89,7 +89,7 @@ class create_network:
             except KeyError:
                 self.connections[key]=[value]
         t1=time.time()
-        print ('initialisation time:',(t1-t0))
+        #print ('initialisation time:',(t1-t0))
      
     def excite(self,nodeindex):
         
@@ -240,7 +240,7 @@ class run:
         
     def propagate_storage(self):
       
-        print ("you set store==", self.store)
+        #print ("you set store==", self.store)
         for times in range(self.runs):
                 
             if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
