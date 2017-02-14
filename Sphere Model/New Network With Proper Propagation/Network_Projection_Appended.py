@@ -136,7 +136,7 @@ class create_network:
         self.nodes-=1  
         self.nodes[self.nodes==-1]=0
         self.nodes += newnodes*self.excitation
-        print ("excited cells are",self.excited)
+        #print ("excited cells are",self.excited)
      
         
     
@@ -217,7 +217,7 @@ class create_network:
 
 class run:
     
-    def __init__(self,network, plot=False,store=True,runs=5000):
+    def __init__(self,network, plot=False,store=True,runs=5000, fib_threshold=350):
         
         
         self.runs=runs   
@@ -230,6 +230,10 @@ class run:
         self.excitedhistory=[]
         self.nodeshistory.append(self.network.nodes)
         self.num_excited=[]
+        
+        self.fib_threshold=fib_threshold
+        self.infibrillation=False
+        self.tfibrillation=[]
         
         self.zeroexcited=[]
         
@@ -246,13 +250,51 @@ class run:
             self.time+=1
             self.network.totalruns+=1
             if self.store==True:
-                self.excitedhistory.append(self.network.excited)
+                #self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
-                if self.num_excited[-1]==0:
-                    self.zeroexcited.append(self.time)
+                
+                if self.num_excited[-1]>=self.fib_threshold: # if more excited cells than threshold enters fib
+                    self.fibrillation()
+                elif self.infibrillation==True:   # if in fibrillation  and if the num excited has been below the threshold for two cicles(heartbeatsteps) then it stops fib
+                    if len(self.num_excited) > 2*self.network.heartbeatssteps:
+                         if all(i <= self.fib_threshold for i in self.num_excited[-(1+2*self.network.heartbeatssteps):]):
+                             self.stopfibrillation
+                    
+                
                 
             self.network.onestep()
- 
+
+    
+   
+        
+    def fibrillation(self):
+            
+        if self.infibrillation==False:
+            self.infibrillation=True
+            self.tfibrillation.append([self.time])
+    
+    
+    def stopfibrillation(self):
+
+        self.tfibrillation[-1].append(self.time)
+        self.infibrillation=False
+        
+        
+    
+
+    def timeinfibrillation(self):
+        timeinfibrillation=0
+        print("tfibrillation", self.tfibrillation)
+        for elements in self.tfibrillation:
+            if len(elements)==2:
+                timeinfibrillation+=elements[1]-elements[0]
+                print(elements ,"len elements = 2")
+            elif len(elements)==1:
+                timeinfibrillation+=self.time-elements[0]
+                print(elements, "len elements = 1")
+                
+          
+        return timeinfibrillation
     
     def animator(self,sph):
         
@@ -468,16 +510,17 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_transv = hconn,
                    p_transv = 1,
                    impulse_start = pent_ind,
-                   p_dysf = 0,
-                   p_unexcitable = 0,
-                   excitation = 55, 
-                   hbs = 13)
+                   p_dysf = 0.1,
+                   p_unexcitable = 0.1,
+                   excitation = 25, 
+                   hbs = 110)
 
 #runc = run(network = n, plot=True,store=True,runs=1000)
 #runc.animator(s)
 
 #for storing data instead
-runc = run(network = n, plot=False,store=True,runs=1000)
+
+runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
 runc.propagate_storage()
 
 
@@ -490,6 +533,8 @@ instead of coarse graining the model by 5 as in Kims we coarse grain it by 20 (w
 this gives refractory period equal to 13(12.5) and excitation of 55( using T=660ms)
 this gives refractory period equal to 13 and excitation of 63( using T=760ms)
 
+180 fib threshold
+
 """
 
 """
@@ -500,6 +545,8 @@ and the width of the equator 320
 instead of coarse graining the model by 5 as in Kims we coarse grain it by 10 (we have 97 instead of 200)
 this gives refractory period equal to 25 and excitation of 110( using T=660ms)
 this gives refractory period equal to 25 and excitation of 126( using T=760ms)
+
+fib threshold 350
 
 """
 

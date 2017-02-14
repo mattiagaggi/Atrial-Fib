@@ -49,13 +49,36 @@ time=100000
 number_of_systems=50
 
 
+
+
+#opening pickled files for reinstatement of connections
+
+
+d=open('horiz_conn_rec_6xconn.pkl', 'rb')
+hconn=pickle.load(d)
+
+f=open('vert_conn_rec_6xconn.pkl', 'rb')
+vconn=pickle.load(f)
+
+e=open('startimp_ind_rec_6xconn.pkl', 'rb')
+pent_ind=pickle.load(e)
+
+g=open('colours_rec_6xconn.pkl', 'rb')
+colours=pickle.load(g)
+
+#h=open('sph_rec_6xconn.pkl', 'rb')
+#s=pickle.load(h)
+
+
+
+
+
 horiz_connlist=[]
 vert_connlist=[]
-
 risk=[] 
 riskstd=[]
 
-#need to define fibrillation first
+
 
 
 
