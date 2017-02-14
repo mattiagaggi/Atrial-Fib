@@ -240,7 +240,7 @@ class run:
         
     def propagate_storage(self):
       
-        print "you set store==", self.store
+        print ("you set store==", self.store)
         for times in range(self.runs):
                 
             if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -258,7 +258,7 @@ class run:
                 elif self.infibrillation==True:   # if in fibrillation  and if the num excited has been below the threshold for two cicles(heartbeatsteps) then it stops fib
                     if len(self.num_excited) > 2*self.network.heartbeatssteps:
                          if all(i <= self.fib_threshold for i in self.num_excited[-(1+2*self.network.heartbeatssteps):]):
-                             self.stopfibrillation
+                             self.stopfibrillation()
                     
                 
                 
@@ -298,7 +298,7 @@ class run:
     
     def animator(self,sph):
         
-        print "you set store==",self.store
+        print( "you set store==",self.store)
         self.sph = sph
 
         self.surf, self.fig = self.plot_sphere_a(sph)
@@ -316,28 +316,75 @@ class run:
                    
                 
                 
+    def propagate_a(self):
+        for times in range(runs):
+            if self.store==True:
+                
+                if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
+                    for elements in self.network.impulse_start:
+                        self.network.excite(elements)
+                    
+                self.time+=1
+                self.network.totalruns+=1
+                self.excitedhistory.append(self.network.excited)
+            self.network.onestep()
+            colours = self.network.nodes
+            colours = colours/sum(colours) 
+            yield colours
+    
+            
+                
+    def long_edges(x, y, triangles, radio=22):
+        out = []
+        for points in triangles:
+            #print points
+            a,b,c = points
+            d0 = np.sqrt( (x[a] - x[b]) **2 + (y[a] - y[b])**2 )
+            d1 = np.sqrt( (x[b] - x[c]) **2 + (y[b] - y[c])**2 )
+            d2 = np.sqrt( (x[c] - x[a]) **2 + (y[c] - y[a])**2 )
+            max_edge = max([d0, d1, d2])
+            #print points, max_edge
+            if max_edge > radio:
+                out.append(True)
+            else:
+                out.append(False)
+        return out               
+                
+                
     def plot_sphere_a(self, sph):
         self.fig = plt.figure()
-        
         #self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
-        self.ax = self.fig.add_subplot(111, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
-        self.ax.view_init(elev=90., azim=0)
-        """
-        #self.ax.axis([-1,1,-1,1, -1, 1])
+        #self.ax = self.fig.add_subplot(111)#, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
+        #self.ax.view_init(elev=90., azim=0)
         
+        #self.ax.axis([-1,1,-1,1, -1, 1])
+        """
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
         self.ax.set_zlim(-0.55, 0.55)
         """
-    
+        #plt.gca().set_aspect('equal')
+        #axes = plt.gca()
+        #axes.set_xlim([-4,4])
+        #axes.set_ylim([-5,35])
         self.x, self.y, self.z   = sph.ch.points[sph.ch.vertices][:,0],sph.ch.points[sph.ch.vertices][:,1], sph.ch.points[sph.ch.vertices][:,2]
-        
-        #self.x, self.y = sph.Mercator_Projection()#sph.Mollewide_Projection()
+        #print("self.x", self.x)
+        #self.avg = (self.xc+ self.yc+ self.zc)/3
+        #self.x, self.y = sph.Mercator_Projection(-2.3*np.pi/8.)#sph.Mercator_Projection()#s#Mollewide
         self.z = np.zeros(self.x.shape)
-        
-        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
         self.triangles = sph.ch.simplices
-        sph.icosahedron_vertices=np.asarray(sph.icosahedron_vertices)
+        #self.xy=np.vstack((self.x, self.y)).T
+        #tri = Delaunay(self.xy)
+        #tris =mtri.Triangulation(self.x, self.y)
+        #self.triangles = tris.triangles
+        #self.ax.tricontour(triangles = self.triangles, Z=self.z)#, cmap=plt.cm.Greys_r, antialiased=False)
+        #self.surf = self.ax.
+        #self.triangles = tri.simplices
+        #mask = [s]
+        self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
+        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
+        #self.surf.set_array(colours)
+        #sph.icosahedron_vertices=np.asarray(sph.icosahedron_vertices)
         #self.ax.scatter(sph.icosahedron_vertices[:,0],sph.icosahedron_vertices[:,1], sph.icosahedron_vertices[:,2], c='red')
         
         plt.show()
@@ -358,10 +405,12 @@ class run:
         colours = self.network.nodes
         colours = colours/sum(colours) 
         
-        
-        self.ax.clear()
-        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
-        self.surf.set_array(colours)
+        print("length of colours and x",len(colours), len(self.x))
+        #
+        #self.ax.clear()
+        self.surf = plt.tripcolor(self.x, self.y,  self.triangles, self.z, facecolors = colours[:len(self.triangles)], cmap=plt.cm.Greys_r, antialiased=False)
+        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
+        #self.surf.set_array(colours)
         """
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
@@ -369,11 +418,7 @@ class run:
         """
         print("time", self.time)
         return self.surf,
-    
-        
                 
-
-
 
 class Define_Connections:
     
@@ -516,13 +561,13 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    hbs = 110)
 
 #runc = run(network = n, plot=True,store=True,runs=1000)
-#runc.animator(s)
+
 
 #for storing data instead
 
 runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
 runc.propagate_storage()
-
+#runc.animator(s)
 
 """
 for recursion 5 
