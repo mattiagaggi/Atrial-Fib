@@ -347,6 +347,11 @@ class run: #Class to run code
                 if len(self.num_excited) > 440 and all(i <= 220 for i in self.num_excited[-441:]) :
                     self.stopfibrillation()
 
+    
+    
+    
+    
+    
     def fibrillation(self):
             
         if self.infibrillation==False:

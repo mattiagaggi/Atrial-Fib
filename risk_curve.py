@@ -37,6 +37,7 @@ kisherror = kishmatrix[:,2]
 p_transversalconn= kishnu #np.arange(0,0.6,0.05) #nu
 
 
+
 time=100000
 number_of_systems=50
 
@@ -50,8 +51,10 @@ risk=[]
 riskstd=[]
 t_fib_data = []
 t_fib_temp = []
+
 number_fib = []
 n_fib_data = []
+
 n_fib_avg = []
 n_fib_err = []
 t_in_fib = []
