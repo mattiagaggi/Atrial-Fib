@@ -20,10 +20,16 @@
 %\usepackage{textcomp}
 \graphicspath{ {H:/} }
 
+\usepackage{smartdiagram}
+\usepackage{metalogo}
+\usepackage{dtklogos}
+
+
+
 \begin{document}
 
-\title {\textbf{ Complexity science approach to Atrial Fibrillation}}
-\author{Tigany Zarrouk\\ CID: 00823932\\\textbf{Supervisor}: Kim Christensen \\ Condensed Matter Theory Group---Imperial College London}
+\title {\textbf{ A Sphere Model for Atrial Fibrillation}}
+\author{Tigany Zarrouk \& Mattia Gaggi \textbf{Supervisor}: Kim Christensen \\ Condensed Matter Theory Group---Imperial College London}
 
 \date{}
 \maketitle
@@ -32,64 +38,57 @@
 
 
 
-\begin{abstract}
-
-Modelling Atrial Fibrillation (AF) to ascertain its causes accurately, allowing for effective treatment, has been extensively studied over the past few decades. It is the largest cause of strokes linked with cardiac arrhythmia in aging populations and is due to impaired contractility of the atria in the heart, leading to blood clot formation. Action potential propagation, mediated by ionic species, are seen to be irregular in AF, which causes some atrial myocytes to contract at 300+ times per minute, much faster than healthy hearts which contract at 60-100 times per minute. This beating is regulated by the sinoatrial node which initiates action potentials that propagate through myocytes, causing contractions. Altered refractory period and conduction speed of signals has been seen to promote AF in various models and is caused physically by the fibrosis of cells, reducing the coupling of electrical signals transversally to some myocytes; giving rise to reentry circuits. The most prominent reentry model, the spiral wave model, has been seen to more closely follow clinical and experimental observations than other models of wavefront action. Cellular automata modelling paves the way for large scale simulations of tissue in the heart without the need to solve differential equations, which can be computationally costly. Moore neighbourhoods are seen to be more effective at producing isotropy of spiral waves, reducing flat edges, in rectilinear cellular automata models. Modelling scroll waves, using hybrid cellular automata models, using novel methods to find rotors and replicating the morphology of the heart with its heterogeneities more closely seem to be viable directions for further research. 
-
-\end{abstract}
-
 
 \section{\textbf{\underline{Introduction}}}
 
-Medical science and the study of disease has been a crucial marker of society's success and development through the ages. Understanding disease gives insights into how to treat and diagnose serious conditions, of which can be fatal. One such condition that has eluded explanation and effective treatment is Atrial Fibrillation (AF), which is the leading cause of Ischaemic stroke in people over 75---seemingly due to incomplete contraction which leads to the formation of blood clots that can travel to the brain \cite{Hart}. It has been known that there are cardiovascular diseases that are predisposed to initiate AF, such as Congestive Heart Failure, Pericarditis and Hypertension through a combination of atrial pressure and dilation, but the precise mechanics are unknown. AF and VF (ventricular fibrillation) are thought to be caused by the breakup of waves of electrical impulses, that induce contraction, into interfering wavelets that produce chaotic behaviour. 
+Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major causes of stroke and heart failure. AF is also the most widespread cardiac condition, with over 30 millions of people worldwide suffering from it. In the UK, expenses related to this disease account for more than $1\%$ of the total budget of the National Health Service, which is more than $800$ million pounds.Atrial fibrillation usually manifests itself in patients affected through alterations of the normal cardiac rhythm lasting short periods of time (also called fibrillation episodes).\\
 
-Healthy hearts have a regular, sinus  rhythm which is moderated by the sinoatrial node located in the right atrium of the heart. Fibrillatory activity in the atrium is characterised by a hastened activation of cells: atrial cells activate 300-600 times a minute in contrast to the expected sinus rhythm of 60-100 beats per minute.% Ectopic firing has been observed in mainly in the left atria. 
-
-Current treatment involves introducing antiarrhythmic drugs of which side effects include proarrhythmia, which can cause sudden death \cite{Nattel1}. Surgical methods primarily involve the Maze procedure, by which a maze-like pattern is cut into the atria such that there is only one path that the electrical impulse can take from the sinoatrial node to the atrioventricular node. The treatment is usually successful but still may lead to fibrillation \cite{Tsui}. The ablation of cells in has been shown to treat AF therapeutically. Catheter ablation has had suboptimal success rates. Electrogram-guided ablation is a burgeoning area of research. Complex-fractionated atrial electrograms (CFAEs) are proposed as sites for ablation as they seem to be critical for AF \cite{Greek}. % These sites seem to be mainly focussed around the pulmonary veins. 
-
-Electrograms are used for non-contact mapping and can be used to elucidate areas of fibrillatory activity. The most popular types are unipolar and bipolar. Unipolar electrograms have problems subtracting far-field signal and the wavefront direction affects the amplitude of the wave recorded---in contrast to bipolar electrograms---but the morphology of the surface can indicate the direction of the wavefront. Bipolar electrodes offer the advantage of a superior signal-to-noise ratio but with markedly less amplitude in sensing depolarization \cite{Vincent}. 
-%` whereas bipolar electrograms do not experience these problems. 
-
-
-\section{\textbf{\underline{Electrophysiology of the heart}}}
-
-Signals propagate through the heart by an action potential arising due to the interplay of ions with pacemaker cells, in the sinoatrial and atrioventricular nodes, and myocardial cells in cardiac muscle \cite{Augustus}. See figure 1 for a diagram of the action potentials involved.
-
- Myocardial cells in the heart have a potential difference and concentration gradient intrinsic to their structure: Na$^{+}$ and Cl$^{-}$ ions are higher in concentration outside of the cell, while K$^{+}$ and organic anions (A$^{-}$) are more concentrated on the inside. Ca$^{2+}$  ions are higher in concentration extracellularly but they are bound, mainly in the sarcoplasmic reticulum. 
-This gives a resting membrane potential of $-75$mV, when no action potential is propagating, as the only ion that is allowed free movement is K$^{+}$ of which the concentration gradient and potential difference balance out the efflux (due to the concentration gradient) and influx (due to the negative resultant potential difference). This is phase 4 of the action potential. There are gates through which specific ions can flow into or out of the cell when a threshold voltage has been reached. After a sufficient stimulation, positive ions (mainly Na$^{+}$)  flood into the myocardial cell which causes rapid depolarisation (phase 0). Once depolarised enough, after a small efflux of K$^{+}$ and  Cl$^{-}$ ions (phase 1), Ca$^{2+}$ ion voltage-gated channels open, which induces Ca$^{2+}$ release from intracellular stores. This gives a plateau of potential difference (phase 2) where an influx of  K$^{+}$ ions sustains the voltage against the efflux of  Ca$^{2+}$ ions. The free calcium ions cause myocardial contraction. After a this long plateau phase,  K$^{+}$ ion channels reopen to repolarise the cell (phase 3) to get ready for another contraction, reverting to phase 4. The period where a cell cannot respond to stimuli to induce contraction is the refractory period. 
-
-%5 phases of the normal action potential:
-
-%Phase 4, or the resting potential, is stable at ≈−90 mV in normal working myocardial cells.
-
-%Phase 0 is the phase of rapid depolarization. The membrane potential shifts into positive voltage range. This phase is central to rapid propagation of the cardiac impulse (conduction velocity, θ=1 m/s).
-
-%Phase 1 is a phase of rapid repolarization. This phase sets the potential for the next phase of the action potential.
-
-%Phase 2, a plateau phase, is the longest phase. It is unique among excitable cells and marks the phase of calcium entry into the cell.
-
-%Phase 3 is the phase of rapid repolarization that restores the membrane potential to its resting valu
-%Through this electrical conduction, the cardiac muscle (myocardium) contracts.  
-
-
-In the sinoatrial node, the depolarising current is primarily fulfilled by Ca$^{2+}$ ion movement, which is slow in comparison to the fast Na$^{+}$ currents of the myocardial cells. SA node action potentials have only three phases. Phase 4 is the spontaneous depolarization (pacemaker potential) that triggers the action potential. Phase 0 is the depolarization phase of the action potential. This is followed by phase 3, repolarization. Once the cell is completely repolarized, the cycle is spontaneously repeated.
-
-
-\begin{figure}
-\caption[short title]{Diagram of the action potential in a myocardial cell (A) and in sinoatrial cell (B). Numbers indicate phases of the action potential.  ERP = Effective refractory period \cite{Mizzi}}
-\centering
-\includegraphics[width = 0.5\textwidth]{newactionpot}
-\end{figure}
-
-Ectopic firing---from a focus, not located at the Sinoatrial node, at which action potentials are initiated---can arise from 'afterdepolarisations': the free intracellular Ca$^{2+}$ concentration rises sharply during the depolarised phase of the action potential; when relaxation occurs, the concentration of Ca$^{2+}$  is reduced by uptake into the sarcoplasmic reticulum via Na$^{+}$/ Ca$^{2+}$  exchange. This is an electrogenic process: three Na$^{+}$ ions are exchanged for a single Ca$^{2+}$, thus making the potential difference more positive. This induces an inward current that can depolarise the cell which can lead to spontaneous action potentials firing \cite{Nattel2}. 
+Each heart beat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to the polarisation mechanism of the cell membrane. 
+When a muscle cell (myocyte) is at rest, there is a built up potential difference between the outside and the inside of the cell (polarisation).
 
 
 
-Atrial cell fibrosis causes cells to be unresponsive. Current research suggests that this is due to excessive Ca$^{2+}$ loading, which occurs with tachycardia as many action potentials are enacted. Furthermore, this leads to electrical remodelling of the heart, making AF the more probable pathway of activation regardless of the mechanism for tachycardia \cite{Nattel2}. Due to fibrillation, the concentration of the intracellular Ca$^{2+}$ is altered, thus impairing effective contraction which may give rise to blood clots that can cause strokes. %REVISEEE
 
-%MONODOMAIN AND BIDOMAIN STUFF??
 
-\section{\textbf{\underline{Types of Models}}} %METHODS
+%picture of the heart here
+
+
+
+AF is usually produced  by an calcified muscle cells (fibrosis) in the cardiac tissue which generates a process called reentry. During reentry the electric signal wavefront propagation breaks. It has been shown a clear link between fibrosis and AF
+Even though many treatments have been developed, the mechanisms behind this condition are not completely understood and AF remains a major topic in medical research. The current research revolves around three possible approaches:
+
+
+\smartdiagram[bubble diagram]{Current research,
+ Physiological \\ models, Image-Based \\ Models, \textbf{ CA Models}, antiarrhythmic \\ drugs) t}
+ 
+ Our research is based on expanding on the wrok done by Kim Christensen on CA (Cellular Automata) models \cite{Christensen}.
+
+
+
+
+\section{\textbf{Kim Christensen Model}}
+
+
+"Simple Model for Identifying Critical Regions in Atrial Fibrillation"~\cite{Christensen}produced a simple 2D model for AF. The cardiac cells were arranged in a squared grid with horizontal connections, with a percentage of transversal connections (to reproduce the effect of fibrosis) and a percentage of unexcitable cells.
+
+Electric impulse propagation rules:
+
+%insert fucking rules
+
+
+
+
+
+
+The results from this model show that there is a threshold value of vertical connections beyond which AF is produced spontaneously (without changing refractory period or conduction speed). This matches real data according to which AF is correlated with fibrosis. 
+The model also shows that burning the area affected by AF effectively stops the arrhythmia, which has been recently discovered to be the case . 
+
+
+
+
+
+
+\section{\textbf{Implementing Restitution in Kim Christensen Model}} %METHODS
 
 Mechanisms thought to be responsible for active cardiac arrhythmias are either enhanced/abnormal pulse formation or re-entry. For the former, simulations have included modelling the ionic currents of action potentials such as the Fenton-Karma model \cite{Grandi} \cite{Fenton} and modelling the impulse of an action potential using generic reaction-diffusion equations, such as the FitzHugh-Nagumo Model \cite{FitzHugh}. Most of these models are based on the pioneering work of Hodgkin and Huxley who described the action potential of the giant squid axon, which bears similarities to cardiac cells \cite{Hodgkin}. %CHECKKKKKKKKKKKKKKKKKKK
  For all of these models bidomain or monodomain approaches can be used to model the electrical propagation in myocardial tissue. % intracellularly????
@@ -114,7 +113,7 @@ recent opinions where single, small reentry circuits or local generators have be
 \includegraphics[width = 0.25\textwidth]{spiralbreak2tachy}
 \end{figure}
 
-\section{\textbf{\underline{Cellular Automata Models and}\\ \underline{Further Developments}}}
+\section{\textbf{Kim Christensen model on a Sphere}}
 
 
 
@@ -172,116 +171,7 @@ More cellular automata models have been researched by Siregar et al, where a 3D 
 \begin{thebibliography}{7}
 
 %####################################################
-\bibitem{Hart}
-Hart, R. G. \& Halperin, J. L. (2001).
-\emph{Atrial fibrillation and stroke: concepts and controversies.},
-Stroke 32, 803–808,
-2001
 
-\bibitem{Nattel1}
-S. Nattel, 
-\emph{ Experimental evidence for proarrhythmic mechanisms of antiarrhythmic drugs.}
-Cardiovasc Res. 1998 Mar;37(3):567-77.
-
-\bibitem{Tsui}
-Tsui, S. S. L. Grace, A. A. Ludman, P. F. Schofield, P. M. Page, A. J. P. Rowland, E.  and Large, S. R., 
-\emph{ Maze 3 for Atrial Fibrillation: Two Cuts Too Few?.}
- Pacing and Clinical Electrophysiology,
-17: 2163–2166. doi:10.1111/j.1540-8159.1994.tb03819.x
-1994
-
-
-\bibitem{Greek}
-Demosthenes G Katritsis, Ioannis Pantos and Efstathios P Efstathopoulos, 
-\emph{Catheter ablation of atrial fibrillation guided by electrogram fractionation and dominant frequency analysis},
-Expert Review of Cardiovascular Therapy 
-Volume 9, 2011 - Issue 5, 631-636, 2014
-
-
-\bibitem{Vincent}
-V. DeCaprio, P. Hurzeler snd S. Furman, 
-\emph{A Comparison of Unipolar and Bipolar Electrograms for Cardiac Pacemaker Sensing}
-Circulation, Vol 56, No 5, November 1977
- 
-
-\bibitem{Augustus}
-Augustus O. Grant, MB, ChB, PhD
-\emph{Basic Science for the Clinical Electrophysiologist: Cardiac Ion Channels}
-Circulation: Arrhythmia and Electrophysiology.
-2009; 2: 185-194
-doi: 10.1161/CIRCEP.108.789081
-
-\bibitem{Nattel3}
-Nattel S, Carlsson L.
-\emph{ Innovative approaches to anti-arrhythmic drug therapy.},
-Nat Rev Drug Discov. 2006; 5: 1034–1049. 
-
-
-\bibitem{Mizzi}
-\emph{Amiodarone supplants lidocaine in ACLS and CPR protocols}
-A. Mizzi, T. Tran, D, Mangar, E. M. Camporesi
-Anesthesiology Clinics 29(3):535-45 · September 2011
-
-
-\bibitem{Nattel2}
-S. Nattel, 
-\emph{New Ideas about atrial fibrillation 50 years on},
- NATURE | VOL 415 | 10 JANUARY 2002 |
-
-\bibitem{Grandi}
-E. Grandi, S. V. Pandit, N. Voigt, M.D., A. J. Workman, D. Dobrev, J. Jalife, and D. M  Bers,
-\emph{Human Atrial Action Potential and Ca$^{2+ }$ Model: Sinus Rhythm and Chronic Atrial Fibrillation},
-Circ Res. 2011 October 14; 109(9): 1055–1066. doi:10.1161/CIRCRESAHA.111.253955.
-November 2011
-
-\bibitem{Fenton}
-F. Fenton and A. Karma
-\emph{Vortex dynamics in three-dimensional continuous myocardium with fiber
-rotation: Filament instability and fibrillation},
-1997
-
-\bibitem{FitzHugh}
-Richard FitzHugh, 
-\emph{Impulses and Physiological States in Theoretical Models of Nerve Membrane},
-Biophys J. 1961 Jul; 1(6): 445–466.
-
-
-\bibitem{Hodgkin}
-A. L. Hodgkin and A. F. Huxley, 
-\emph{A quantitative description of membrane current and its application to conduction and excitation in nerve},
-J. Physiol. (I952) I I7, 500-544
-
-\bibitem{Antze}
- C. Antzelevitch
-\emph{Basic mechanisms of re-entrant arrhythmias}
-Curr Opin Cardiol. 2001 Jan;16(1):1-7.
-
-
-\bibitem{Tusscher}
-\emph{Spiral wave dynamics and ventricular arrhythmias},
- K. H. W. Johanna ten Tusscher,
- November 2004.
-
-\bibitem{Allessie}
-Allessie MA, Bonke FIM, Schopman JG,
-\emph{ Circus movement in rabbit atrial muscle as a mechanism of tachycardia. III. The “leading circle” concept: a new model of circus movement in cardiac tissue without the involvement of an anatomical obstacle.},
- Circ Res 1977, 41:9–18.
-
-\bibitem{Greenburg}
-J. M. Greenberg and S. P. Hastings, 
-\emph{Spatial Patterns for Discrete Models of Diffusion in Excitable Media}, 
-SIAM J. APPL. MATH.
-Vol. 34, No. 3, May 1978
-
-\bibitem{Bub}
-G. Bub, A. Shrier, and L. Glass,
-\emph{Spiral Wave Generation in Heterogeneous Excitable Media},
- Phys. Rev. Lett.88, 058101 (2002)
-
-\bibitem{Davidenko}
-Davidenko JM, Kent PF, Chialvo DR, Michaels DC, Jalife J., 
-\emph{Sustained vortex-like waves in normal isolated ventricular muscle.},
- Proc Natl Acad Sci USA. 1990;87:8785–8789
 
 \bibitem{Comtois}
 P. Comtois, J. Kneller, S. Nattel,
@@ -289,19 +179,7 @@ P. Comtois, J. Kneller, S. Nattel,
 Europace. 2005 Sep;7 Suppl 2:10-20.
 DOI: http://dx.doi.org/10.1016/j.eupc.2005.05.011
 
-\bibitem{afstudy}
-S. M. Narayan, D. E. Krummen, and W.-J. RAPPEL, 
-\emph{Clinical mapping approach to diagnose
-electrical rotors and focal impulse sources for human atrial fibrillation},
- Journal of
-cardiovascular electrophysiology, vol. 23, no. 5, pp. 447–454, 2012.
 
-
-
-\bibitem{Skanes}
-Mandapati, R., Skanes, A., Chen, J., Berenfeld, O. and  Jalife, J. 
-\emph{Stable microreentrant sources as a mechanism of atrial fibrillation in the isolated sheep heart.}
-Circulation 101, 194–199 (2000). 
 
 \bibitem{Alonso}
 S. Alonso, M. Bar and B. Echebarria
@@ -315,56 +193,14 @@ Kim Christensen, Kishan A. Manani, and Nicholas S. Peters
 \emph{Simple Model for Identifying Critical Regions in Atrial Fibrillation}
 Phys. Rev. Lett. 114, 028104 – Published 16 January 2015
 
-\bibitem{Ozawa}
-Ashihara T, Haraguchi R, Nakazawa K, Namba T, Ikeda T, Nakazawa Y, Ozawa T, Ito M, Horie M, Trayanova NA., 
-\emph{The role of fibroblasts in complex fractionated electrograms during persistent/permanent atrial fibrillation: implications for electrogram-based catheter ablation.}
-Circ Res. 2012 Jan 20;110(2):275-84. doi: 10.1161/CIRCRESAHA.111.255026
 
-\bibitem{Felipe}
-F.A. Atienza, J. R. Carrion, A. G. Alberola, J. L. R. Alvarez, J. J. S. Munoz, J. M. Sanchez, M. V. Chavarri,
-\emph{A Probabilistic Model of Cardiac Electrical Activity Based on a Cellular Automata System},
-Revista Española de Cardiología (English Edition), Volume 58, Issue 1, January 2005, Pages 41-47,
-doi:10.1016/S1885-5857(06)60233-8
-
-\bibitem{Pour}
-F. Pourhasanzande, S. H. Sabzpoushan
-\emph{A new Cellular Automata Model of Cardiac
-Action Potential Propagation based on
-Summation of Excited Neighbors}, 
-International Journal of Medical, Health, Biomedical, Bioengineering and Pharmaceutical Engineering Vol:4, No:8, 2010  
 
 \bibitem{Fedotov}
 N. M. Fedotov,  A. I. Oferkin, and S. V. Zhary,
 \emph{Modeling Sources of Atrial Fibrillation on a Triangulated Sphere}
 Biomedical Engineering, Vol. 49, No. 2, July, 2015, pp. 112115. 
 
-\bibitem{Siregar}
-P. Siregar, J. P. Sinteff, N. Julen, P. Le Beux,
-\emph{An Interactive 3D Anisotropic Cellular Automata Model of the Heart}
-Computers and Biomedical Research
-Volume 31, Issue 5, October 1998, Pages 323-347, 
-doi:10.1006/cbmr.1998.1485
 
-\bibitem{Siregar2}
-P. Siregar, J.P. Sinteff, M. Chahine, P. Lebeux
-\emph{A Cellular Automata Model of the Heart and Its Coupling with a Qualitative Model}, 
-Computers and Biomedical Research
-Volume 29, Issue 3, June 1996, Pages 222-246,
-doi:10.1006/cbmr.1996.0017
-
-\bibitem{Bartocci}
-E. Bartocci, F. Corradini, M.R. Di Berardini, E. Entcheva and S.A. Smolka, R. Grosu, 
-\emph{Modeling and simulation of cardiac tissue using hybrid I/O automata}
-Theoretical Computer Science
-Volume 410, Issues 33–34, 21 August 2009, Pages 3149-3165,
-doi:10.1016/j.tcs.2009.02.042
-
-
-\bibitem{Luca}
-A. Luca, V. Jaquemet, N. Virag, J. M. Vesin
-\emph{Influence of Right and Left Atrial Tissue Heterogeneity on
-Atrial Fibrillation Perpetuation }
-Computing in Cardiology 2015; 42:449-452. 
 
 %imref https://o.quizlet.com/i/1UZTM_D5PFefI8E5JOk8Ig_m.jpg
 
