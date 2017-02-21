@@ -51,10 +51,15 @@ p_transversalconn.append(0.01)
 p_transversalconn.append(0.005)
 np.asarray(p_transversalconn)
 
-extra_nu = [0.195, 0.205,0.215, 0.225, 0.235, 0.245,0.32, 0.34]
+extra_nu1 = [0.195, 0.205,0.215, 0.225, 0.235, 0.245,0.32, 0.34]
+extra_nu2 = [0.33, 0.35, 0.36, 0.37, 0.38,0.39, 0.4 ]
 m_trans_conn = p_transversalconn.copy()
-for nu in extra_nu:
+for nu in extra_nu1:
     m_trans_conn.append(nu)
+for nu in extra_nu2:
+    m_trans_conn.append(nu)
+
+
 
 timet=100000
 number_of_systems=50
@@ -95,7 +100,7 @@ risk_fib = []
 risk=[]      #risk final output
 riskerror=[]   #risk std
 
-for elements in m_trans_conn:
+for elements in extra_nu2:
     n = Network.create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
@@ -143,13 +148,13 @@ for elements in m_trans_conn:
 
 
 
-fileobj0 = open('connections_sph_run1.pkl', 'wb')
-fileobj1 = open('dysf_grids_sph_run1.pkl', 'wb')
-fileobj2 = open('t_fib_data_sph_run1.pkl', 'wb')
-fileobj3 = open('t_in_fib_sph_run1.pkl', 'wb')
-fileobj6 = open('risk_fib_sph_run1.pkl', 'wb')
-fileobj4 = open('risk_sph_run1.pkl', 'wb')
-fileobj5 = open('riskerror_sph_run1.pkl', 'wb')
+fileobj0 = open('connections_sph_run1_extra_data.pkl', 'wb')
+fileobj1 = open('dysf_grids_sph_run1_extra_data.pkl', 'wb')
+fileobj2 = open('t_fib_data_sph_run1_extra_data.pkl', 'wb')
+fileobj3 = open('t_in_fib_sph_run1_extra_data.pkl', 'wb')
+fileobj6 = open('risk_fib_sph_run1_extra_data.pkl', 'wb')
+fileobj4 = open('risk_sph_run1_extra_data.pkl', 'wb')
+fileobj5 = open('riskerror_sph_run1_extra_data.pkl', 'wb')
 
 
 pickle.dump(conn, fileobj0, -1)
@@ -185,6 +190,13 @@ file4 = open('riskerrorr_restn1.pkl', 'rb')
 riskstd_rest = pickle.load(file4)
 file4.close()
 
+file5 = open('risk_sph_run1.pkl', 'rb')
+risk_old_sph = pickle.load(file5)
+file5.close()
+
+file6 = open('riskerror_sph_run1.pkl', 'rb')
+riskerror_old_sph = pickle.load(file6)
+file6.close()
 
 
 """
@@ -195,7 +207,12 @@ plt.errorbar(p_transversalconn,risk, yerr=riskerror, fmt='o')
 plt.title('Risk Curve')
 plt.show()           
 """
-      
+
+for r in risk:
+    risk_old_sph.append(r)
+for rstd in riskerror:
+    riskerror_old_sph.append(rstd)
+     
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_xlabel("Percentage transversal Connections/Nu")
@@ -210,8 +227,8 @@ ax.errorbar(p_transversalconn,risk_o, yerr=risk_o_std, fmt='r+')
 ax.plot(kishnu, kishrisk, 'g^', label = 'Kishans Data')
 ax.errorbar(kishnu, kishrisk, yerr=kisherror, fmt='g^')
 
-ax.plot(m_trans_conn,risk, 'cd', label = 'Sphere Model')
-ax.errorbar(m_trans_conn,risk, yerr=riskerror, fmt='cd')
+ax.plot(m_trans_conn,risk_old_sph, 'cd', label = 'Sphere Model')
+ax.errorbar(m_trans_conn,risk_old_sph, yerr=riskerror_old_sph, fmt='cd')
 
 
 ax.legend()

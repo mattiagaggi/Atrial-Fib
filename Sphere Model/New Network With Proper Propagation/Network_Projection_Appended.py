@@ -308,7 +308,7 @@ class run:
         if self.store==True:
                 self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
-        plt.show()
+        #plt.show()
 
           
             
@@ -353,16 +353,16 @@ class run:
                 
     def plot_sphere_a(self, sph):
         self.fig = plt.figure()
-        #self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
+        self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
         #self.ax = self.fig.add_subplot(111)#, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
-        #self.ax.view_init(elev=90., azim=0)
+        self.ax.view_init(elev=40., azim=0)
         
         #self.ax.axis([-1,1,-1,1, -1, 1])
-        """
+        
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
         self.ax.set_zlim(-0.55, 0.55)
-        """
+        
         #plt.gca().set_aspect('equal')
         #axes = plt.gca()
         #axes.set_xlim([-4,4])
@@ -371,7 +371,7 @@ class run:
         #print("self.x", self.x)
         #self.avg = (self.xc+ self.yc+ self.zc)/3
         #self.x, self.y = sph.Mercator_Projection(-2.3*np.pi/8.)#sph.Mercator_Projection()#s#Mollewide
-        self.z = np.zeros(self.x.shape)
+        #self.z = np.zeros(self.x.shape)
         self.triangles = sph.ch.simplices
         #self.xy=np.vstack((self.x, self.y)).T
         #tri = Delaunay(self.xy)
@@ -381,13 +381,13 @@ class run:
         #self.surf = self.ax.
         #self.triangles = tri.simplices
         #mask = [s]
-        self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
+        #self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
         #self.surf.set_array(colours)
         #sph.icosahedron_vertices=np.asarray(sph.icosahedron_vertices)
         #self.ax.scatter(sph.icosahedron_vertices[:,0],sph.icosahedron_vertices[:,1], sph.icosahedron_vertices[:,2], c='red')
         
-        plt.show()
+        #plt.show()
         return self.surf, self.fig
         
 
@@ -408,9 +408,9 @@ class run:
         print("length of colours and x",len(colours), len(self.x))
         #
         #self.ax.clear()
-        self.surf = plt.tripcolor(self.x, self.y,  self.triangles, self.z, facecolors = colours[:len(self.triangles)], cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf.set_array(colours)
+        #self.surf = plt.tripcolor(self.x, self.y,  self.triangles, self.z, facecolors = colours[:len(self.triangles)], cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf.set_array(colours)
         """
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
@@ -522,8 +522,8 @@ class Define_Connections:
         plt.show()
 
 
-
 """
+s = sp.Sphere( recursion_level = 6 )
 #opening pickled files for reinstatement of connections
 s.construct_icosphere()
 
@@ -544,29 +544,29 @@ colours=pickle.load(g)
 
 """
 
-s = sp.Sphere( recursion_level = 6 )
-conn = Define_Connections(s)
-colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
+
+#conn = Define_Connections(s)
+#colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
 
 
-n = create_network(array_nodesindices = np.arange(len(colours)),
-                   array_vertical = vconn,
-                   array_transv = hconn,
-                   p_transv = 1,
-                   impulse_start = pent_ind,
-                   p_dysf = 0.1,
-                   p_unexcitable = 0.1,
-                   excitation = 25, 
-                   hbs = 110)
+#n = create_network(array_nodesindices = np.arange(len(colours)),
+#                   array_vertical = vconn,
+#                   array_transv = hconn,
+#                   p_transv = 0.27,
+#                   impulse_start = pent_ind,
+#                   p_dysf = 0.05,
+ #                  p_unexcitable = 0.05,
+#                   excitation = 25, 
+ #                  hbs = 110)
 
 #runc = run(network = n, plot=True,store=True,runs=1000)
 
 
 #for storing data instead
 
-runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
-runc.propagate_storage()
+#runc = run(network = n, plot=False,store=False,runs=2000,fib_threshold=350)
+#runc.propagate_storage()
 #runc.animator(s)
 
 """
@@ -603,16 +603,14 @@ fib threshold 350
 
 #############################
 #Storing animation 
-
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=25, metadata=dict(artist='Me'), bitrate=1800)
-#runc.anim1.save('Recursion6xvom.mp4', fps=25, extra_args=['-vcodec', 'libx264'])
-#runc.anim1.save('')
+#runc.anim1.save('Recursion6testt3.mp4', fps=25, extra_args=['-vcodec', 'libx264'])
 #plt.show()
 #############################
 
-
 """
+
 #closing pickle files
 d.close()
 e.close()
