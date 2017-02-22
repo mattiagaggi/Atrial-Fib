@@ -351,8 +351,9 @@ class Sphere:
         '''Makes the icosphere using convex hull'''
         self.icosahedron_vertices = self.normalize_v3(np.array(self.icosahedron_vertices)) #normalizing icosahedron vertices of unit sphere
         self.icosahedron_vertices.tolist()
-        
+        #print("self.faces", self.faces)
         for face in self.faces:
+            #print("face", face)
             new_face_vert = [self.icosahedron_vertices[face[0]], self.icosahedron_vertices[face[1]], self.icosahedron_vertices[face[2]]]
             self.face_cache.append(new_face_vert)
         self.faces = np.asarray(self.face_cache ) #this is an array of points that correspond the icosahedron faces
@@ -371,7 +372,14 @@ class Sphere:
         surf.set_array(colours)
         self.icosahedron_vertices=np.asarray(self.icosahedron_vertices)
         ax.scatter(self.icosahedron_vertices[:,0],self.icosahedron_vertices[:,1], self.icosahedron_vertices[:,2], c='red')
+        ax.view_init(elev=3, azim=-169)
         
+        #self.ax.axis([-1,1,-1,1, -1, 1])
+        
+        ax.set_xlim(-0.55, 0.55)
+        ax.set_ylim(-0.55, 0.55)
+        ax.set_zlim(-0.55, 0.55)
+        ax.set_title('Sphere Plot, t=0')
         plt.show()
         return surf
     """

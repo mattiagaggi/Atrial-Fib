@@ -517,16 +517,19 @@ class Define_Connections:
         fig2 = plt.figure()
         ax2 = fig2.gca(projection='3d')
         #ax2.plot(phi_avg[:,0], phi_avg[:,1], phi_avg[:,2], 'r', markersize=1)
+        ax2.set_xlim(-0.55, 0.55)
+        ax2.set_ylim(-0.55, 0.55)
+        ax2.set_zlim(-0.55, 0.55)
         ax2.add_collection(lc1)
         ax2.add_collection(lc2)
         plt.show()
 
 
-"""
-s = sp.Sphere( recursion_level = 6 )
-#opening pickled files for reinstatement of connections
-s.construct_icosphere()
 
+s = sp.Sphere( recursion_level = 5 )
+#opening pickled files for reinstatement of connections
+#'s.construct_icosphere()
+"""
 d=open('horiz_conn_rec_6xconn.pkl', 'rb')
 hconn=pickle.load(d)
 
@@ -539,28 +542,37 @@ pent_ind=pickle.load(e)
 g=open('colours_rec_6xconn.pkl', 'rb')
 colours=pickle.load(g)
 
+#closing pickle files
+d.close()
+e.close()
+f.close()
+g.close()
+#h.close()
 #h=open('sph_rec_6xconn.pkl', 'rb')
 #s=pickle.load(h)
-
 """
 
 
-#conn = Define_Connections(s)
-#colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
+
+conn = Define_Connections(s)
+colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
 
 
-#n = create_network(array_nodesindices = np.arange(len(colours)),
-#                   array_vertical = vconn,
-#                   array_transv = hconn,
-#                   p_transv = 0.27,
-#                   impulse_start = pent_ind,
-#                   p_dysf = 0.05,
- #                  p_unexcitable = 0.05,
-#                   excitation = 25, 
- #                  hbs = 110)
+n = create_network(array_nodesindices = np.arange(len(colours)),
+                   array_vertical = vconn,
+                   array_transv = hconn,
+                   p_transv = 0.1,
+                   impulse_start = pent_ind,
+                   p_dysf = 0.05,
+                   p_unexcitable = 0.05,
+                   excitation = 25, 
+                   hbs = 110)
 
-#runc = run(network = n, plot=True,store=True,runs=1000)
+#runc = run(network = n, plot=False,store=False,runs=1)
+#runc.propagate_storage()
+#colours = n.nodes
+#s.plot_sphere(colours)
 
 
 #for storing data instead
@@ -598,7 +610,7 @@ fib threshold 350
 
 
 
-#conn.connectome() #visualisation of connections, as you've seen
+conn.connectome() #visualisation of connections, as you've seen
 
 
 #############################
@@ -611,12 +623,6 @@ fib threshold 350
 
 """
 
-#closing pickle files
-d.close()
-e.close()
-f.close()
-g.close()
-#h.close()
 """
 
 """

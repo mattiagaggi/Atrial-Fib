@@ -58,8 +58,8 @@ for nu in extra_nu:
 
 timet=100000
 number_of_systems=12
-prob_dysf=0.005
-prob_unexcitable=0.005
+prob_dysf=0.1
+prob_unexcitable=0.1
 excitationvalue=25
 heart=110
 threshold=350
@@ -143,13 +143,13 @@ for elements in m_trans_conn:
 
 
 
-fileobj0 = open('connections_sph_run3_dysf0005.pkl', 'wb')
-fileobj1 = open('dysf_grids_sph_run3_dysf0005.pkl', 'wb')
-fileobj2 = open('t_fib_data_sph_run3_dysf0005.pkl', 'wb')
-fileobj3 = open('t_in_fib_sph_run3_dysf0005.pkl', 'wb')
-fileobj6 = open('risk_fib_sph_run3_dysf0005.pkl', 'wb')
-fileobj4 = open('risk_sph_run3_dysf0005.pkl', 'wb')
-fileobj5 = open('riskerror_sph_run3_dysf0005.pkl', 'wb')
+fileobj0 = open('connections_sph_run4_dysf01.pkl', 'wb')
+fileobj1 = open('dysf_grids_sph_run4_dysf01.pkl', 'wb')
+fileobj2 = open('t_fib_data_sph_run4_dysf01.pkl', 'wb')
+fileobj3 = open('t_in_fib_sph_run4_dysf01.pkl', 'wb')
+fileobj6 = open('risk_fib_sph_run4_dysf01.pkl', 'wb')
+fileobj4 = open('risk_sph_run4_dysf01.pkl', 'wb')
+fileobj5 = open('riskerror_sph_run4_dysf01.pkl', 'wb')
 
 
 pickle.dump(conn, fileobj0, -1)
@@ -215,6 +215,6 @@ ax.errorbar(m_trans_conn,risk, yerr=riskerror, fmt='cd')
 
 
 ax.legend()
-ax.set_title('Risk Curve--eps/delta=0.005')
+ax.set_title('Risk Curve--eps/delta=0.1')
 plt.show()    
 
