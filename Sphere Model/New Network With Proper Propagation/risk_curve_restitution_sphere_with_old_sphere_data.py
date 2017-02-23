@@ -1,21 +1,9 @@
+import Network_Projection_withrestitution as Network
 import numpy as np
-from scipy.sparse import csr_matrix
-import operator
-from itertools import chain
-import time
-from matplotlib import animation
 from matplotlib import pyplot as plt
-from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
-import pylab as pl
-from matplotlib import collections  as mc
-from mpl_toolkits.mplot3d.art3d import Line3DCollection
-import types
 import pickle
-import ico_prop_projection as sp
-import Network_Projection_Appended as Network
-import copy
-
+import time
+#Kishan's Datae
 kishmatrix = np.array([[0.02,0.99981,4.3015e-06],
 [0.04,0.99983,3.8088e-06],
 [0.06,0.9998,1.0454e-05],
@@ -42,6 +30,7 @@ kishmatrix = np.array([[0.02,0.99981,4.3015e-06],
 [0.3,9.406e-05,9.3115e-05],
 [0.1,0.99919,0.00010423]])
 
+
 kishnu = kishmatrix[:,0]
 kishrisk = kishmatrix[:,1]
 kisherror = kishmatrix[:,2]
@@ -58,15 +47,61 @@ for nu in extra_nu:
 
 timet=100000
 number_of_systems=12
-prob_dysf=0.1
-prob_unexcitable=0.1
+prob_dysf=0.05
+prob_unexcitable=0.05
 excitationvalue=25
 heart=110
 threshold=350
 
+risk=[]
+riskstd=[]
+t_fib_data = []
+t_fib_temp = []
+number_fib = []
+n_fib_data = []
+n_fib_avg = []
+n_fib_err = []
+t_in_fib = []
 
+#fileobj0 = open('realizationdata', 'wb')
 
-#opening pickled files for reinstatement of connections
+d=open('dysf_grids_sph_run1.pkl','rb')
+dysfgrids=pickle.load(d)
+d.close()
+
+dx=open('dysf_grids_sph_run1_extra_data.pkl','rb')
+dysfgrids_x=pickle.load(dx)
+dx.close()
+
+c=open('connections_sph_run1.pkl','rb')
+connections=pickle.load(c)
+c.close()
+
+cx=open('connections_sph_run1_extra_data.pkl','rb')
+connections_x=pickle.load(cx)
+cx.close()
+
+#f=open('fibrosisgrids.pkl','rb')
+#fibrosisgrids=pickle.load(f)
+#f.close()
+
+er=open('risk.pkl','rb')
+risk_o=pickle.load(er)
+er.close()
+
+fr=open('riskerrorr.pkl','rb')
+risk_o_std=pickle.load(fr)
+fr.close()
+counter=0
+
+"""
+if len(dysfgrids)!=len(p_transversalconn)*len(number_of_systems):
+    "watch it mate dysfgrids has wrong number  of elements maybe"
+if len(fibrosisgrids)!=len(p_transversalconn)*len(number_of_systems):
+    "watch it mate dysfgrids has wrong number  of elements maybe"
+    
+"""
+
 d=open('horiz_conn_rec_6xconn.pkl', 'rb')
 hconn=pickle.load(d)
 f=open('vert_conn_rec_6xconn.pkl', 'rb')
@@ -80,12 +115,18 @@ d.close()
 e.close()
 f.close()
 g.close()
+
+for dysfg in dysfgrids_x:
+    dysfgrids.append(dysfg)
+
+for i in connections_x:
+    connections.append(i)
 #h=open('sph_rec_6xconn.pkl', 'rb')
 #s=pickle.load(h)
 
-conn=[]  #stored lists of connections for esch system
-dysfarray=[] #stored lists of dysf array for each system
-num_cells=[] #number of excited cells each time   # WATCH OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!a lot of memory wasted, comment for not trial
+#conn=[]  #stored lists of connections for esch system
+#dysfarray=[] #stored lists of dysf array for each system
+#num_cells=[] #number of excited cells each time   # WATCH OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!a lot of memory wasted, comment for not trial
 
  
 t_fib_data = []#times in fibrillation data
@@ -95,29 +136,32 @@ risk_fib = []
 risk=[]      #risk final output
 riskerror=[]   #risk std
 
-for elements in m_trans_conn:
+
+for j in range(len(m_trans_conn)):
     n = Network.create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = elements,
+                   p_transv = m_trans_conn[j],
                    impulse_start = pent_ind,
                    p_dysf = prob_dysf,
                    p_unexcitable = prob_unexcitable,
                    excitation = excitationvalue, 
-                   hbs = heart, 
+                   hbs = heart,
                    recursion = 6)
+
     
     
-    print("nu = ", elements)
+    print("nu = ",m_trans_conn[j])
     for i in range(number_of_systems):
         
-        
+        n.connections = connections[i + j*50]
+        n.dysf = dysfgrids[i + j*50]
         print("system number", i)
         timea = time.time()
         
         runc = Network.run(network = n, plot=False,store=True,runs=timet,fib_threshold=threshold)
-        conn.append(n.connections)
-        dysfarray.append(n.dysf)
+        
+        #dysfarray.append(n.dysf)
         runc.propagate_storage()
         #num_cells.append(runc.num_excited)  # WATCH OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!a lot of memory wasted, comment for not trial
         
@@ -137,37 +181,33 @@ for elements in m_trans_conn:
     riskerror.append(np.std( risk_fib[-number_of_systems:] )/ (number_of_systems**0.5))
 
 
-
-#num=open('excited_cells', 'wb')   # WATCH OUT NEXT THREE LINES!!!!!!!!!!!!!!!!!!!!!!!!!!!a lot of memory wasted, comment for not trial
-#pickle.dump(num_cells, num, -1) 
-#num.close()
+#nfibavg = 
+risk=np.array(risk)
 
 
 
-fileobj0 = open('connections_sph_run4_dysf01.pkl', 'wb')
-fileobj1 = open('dysf_grids_sph_run4_dysf01.pkl', 'wb')
-fileobj2 = open('t_fib_data_sph_run4_dysf01.pkl', 'wb')
-fileobj3 = open('t_in_fib_sph_run4_dysf01.pkl', 'wb')
-fileobj6 = open('risk_fib_sph_run4_dysf01.pkl', 'wb')
-fileobj4 = open('risk_sph_run4_dysf01.pkl', 'wb')
-fileobj5 = open('riskerror_sph_run4_dysf01.pkl', 'wb')
+fileobj2 = open('t_fib_data_sph_rest_run_12iter.pkl', 'wb')
+fileobj3 = open('t_in_fib_sph_rest_run_12iter.pkl', 'wb')
+fileobj6 = open('risk_fib_sphrest_run_12iter.pkl', 'wb')
+fileobj4 = open('risk_sph_rest_run_12iter.pkl', 'wb')
+fileobj5 = open('riskerror_sph_rest_run_12iter.pkl', 'wb')
 
 
-pickle.dump(conn, fileobj0, -1)
-pickle.dump(dysfarray, fileobj1, -1)
+
 pickle.dump(t_fib_data, fileobj2, -1)
 pickle.dump(t_in_fib, fileobj3, -1)
 pickle.dump(risk, fileobj4, -1)
 pickle.dump(riskerror, fileobj5, -1)
 pickle.dump(risk_fib, fileobj6, -1)
  
-fileobj0.close()
-fileobj1.close()
+
 fileobj2.close()
 fileobj3.close()
 fileobj4.close()
 fileobj5.close()
 fileobj6.close()
+
+
 
 
 file1 = open('risk.pkl', 'rb')
@@ -186,6 +226,27 @@ file4 = open('riskerrorr_restn1.pkl', 'rb')
 riskstd_rest = pickle.load(file4)
 file4.close()
 
+
+file5 = open('risk_sph_run1.pkl', 'rb')
+risk_sph_run1 = pickle.load(file5)
+file5.close()
+
+file6 = open('risk_sph_run1_extra_data.pkl', 'rb')
+riskx_sph_run1 = pickle.load(file6)
+file6.close()
+
+file7 = open('riskerror_sph_run1.pkl', 'rb')
+riskstd_sph_run1 = pickle.load(file7)
+file7.close()
+
+file8 = open('riskerror_sph_run1_extra_data.pkl', 'rb')
+riskstdx_sph_run1 = pickle.load(file8)
+file8.close()
+
+for i in riskx_sph_run1:
+    risk_sph_run1.append(i)
+for j in riskstdx_sph_run1:
+    riskstd_sph_run1.append(j)
 
 
 """
@@ -211,11 +272,17 @@ ax.errorbar(p_transversalconn,risk_o, yerr=risk_o_std, fmt='r+')
 ax.plot(kishnu, kishrisk, 'g^', label = 'Kishans Data')
 ax.errorbar(kishnu, kishrisk, yerr=kisherror, fmt='g^')
 
-ax.plot(m_trans_conn,risk, 'cd', label = 'Sphere Model')
-ax.errorbar(m_trans_conn,risk, yerr=riskerror, fmt='cd')
+ax.plot(m_trans_conn, risk_sph_run1, 'cd', label = 'Sphere Model')
+ax.errorbar(m_trans_conn,risk_sph_run1, yerr=riskstd_sph_run1, fmt='cd')
+
+ax.plot(m_trans_conn,risk, 'm*', label = 'Sphere Model with Restitution')
+ax.errorbar(m_trans_conn,risk, yerr=riskerror, fmt='m*')
 
 
 ax.legend()
-ax.set_title('Risk Curve--eps/delta=0.1')
+ax.set_title('Risk Curve--Sphere Model with Restitution')
 plt.show()    
-
+        
+        
+        
+        
