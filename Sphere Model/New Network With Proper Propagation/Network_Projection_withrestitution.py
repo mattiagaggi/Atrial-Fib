@@ -59,7 +59,7 @@ class create_network:
         self.totalruns = 0
         
         self.recursion=recursion
-        print "recursion=",self.recursion,"make sure the restitution curve is set accordingly"
+        print ("recursion=",self.recursion,"make sure the restitution curve is set accordingly")
         
         
         self.array_vertical=array_vertical
@@ -92,7 +92,7 @@ class create_network:
                 self.connections[key].append(value)
             except KeyError:
                 self.connections[key]=[value]
-        t1=time.time()
+        
         #print ('initialisation time:',(t1-t0))
      
         self.refr=np.zeros(self.size)
@@ -135,7 +135,8 @@ class create_network:
         stepsz=stepsz.astype(int)      
             
         self.maparray=stepsz
-        
+        t1=time.time()
+        print("network creation time", t1-t0)
         
     
     
@@ -565,7 +566,8 @@ colours=pickle.load(g)
 
 """
 
-s = sp.Sphere( recursion_level = 5 )
+"""
+s = sp.Sphere( recursion_level = 6 )
 conn = Define_Connections(s)
 colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
@@ -574,7 +576,7 @@ colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 0.2,
+                   p_transv = 0.1,
                    impulse_start = pent_ind,
                    p_dysf = 0.1,
                    p_unexcitable = 0.1,
@@ -583,12 +585,12 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
 
 runc = run(network = n, plot=True,store=True,runs=1000)
 
-
+"""
 #for storing data instead
 
 #runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
 #runc.propagate_storage()
-runc.animator(s)
+#runc.animator(s)
 
 """
 for recursion 5 
