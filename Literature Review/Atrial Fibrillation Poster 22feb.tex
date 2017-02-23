@@ -87,10 +87,10 @@
             
 \begin{block}{Introduction}
 
-\begin{itemize}
-\item Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major causes of stroke and heart failure. AF is also the most widespread cardiac condition, with over 30 millions of people worldwide suffering from it. In the UK, expenses related to this disease account for more than $1\%$ of the total budget of the National Health Service, which is more than $800$ \textbf{ million pounds} .\\*
- Atrial fibrillation usually manifests itself in patients affected through alterations of the normal cardiac rhythm lasting short periods of time (also called fibrillation episodes).\\
-\end{itemize}
+
+Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major causes of stroke and heart failure. AF is also the most widespread cardiac condition, with over 30 millions of people worldwide suffering from it. In the UK, expenses related to this disease account for more than $1\%$ of the total budget of the National Health Service, which is more than $800$ \textbf{million pounds}.\\*
+ Atrial fibrillation usually manifests itself in patients affected through alterations of the normal cardiac rhythm lasting short periods of time.\\
+
 
 
 \end{block}
@@ -98,51 +98,74 @@
 
 \begin{block}{Phenomenology of the Heart}
 
-
+\begin{columns}
+\begin{column}{.54\textwidth}
 	\begin{itemize}
-	\item \textbf{\textit{Heart Beats Propagation}}: Each heart beat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres 		and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to the polarisation mechanism of the cell membrane. 
+	\item \textbf{\textit{Heartbeat Propagation}}: Each heartbeat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres, and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to polarisation (change in voltage) of the cell membrane. 
+	\end{itemize}
+\end{column}
 
-\begin{wrapfigure}{R}{0.3\textwidth}
-\centering
-\includegraphics[width=0.25\textwidth]{heart}
-\caption{\label{fig:frog1}This is a figure caption.}
-\end{wrapfigure}
+\begin{column}{.43\textwidth}
+	%\begin{wrapfigure}[10]{R}{0.3\textwidth}
+	\begin{figure}
+	
+	
+	\includegraphics[width=0.95\textwidth]{heart}
+	\caption{\label{fig:frog1}This is the structure of the heart.}
+	%\end{wrapfigure}
+	\end{figure}
+\end{column}
+\end{columns}
+\begin{itemize}
 
-
-	\item \textbf{ \textit{Cells Excitation Rules}}: As the electric impulse propagates a single muscle cell goes through three stages:
+	\item \textbf{ \textit{Cells Excitation Rules}}: As the electric impulse propagates, each cardiac single muscle cell can be in one of three stages:
 
 		\begin{itemize}
  		 \item \textit{Excitable state}: the muscle cell is at rest with a negative built up potential.
   										
-  		\item \textit{Excited state}: the muscle cell is excited by its excited neighbours and the Voltage of the cell is at its peak. 
-  		\item \textit{Refractory state} :the muscle cell goes through a phase during which it can't be excited again - this period is called \textit{refractory period}. The \textit{refractory period} duration is related to the heart beat rate and this relationship is called \textit{restitution relationship}.
+  		\item \textit{Excited state}: the muscle cell is excited by the excited cells it is connected to and its voltage is at its peak. 
+  		\item \textit{Refractory state}: the muscle cell goes through a phase during which it can't be excited again, a decrease in voltage---this period is called \textit{refractory period}. The refractory period duration is related to the heartbeat rate and this relationship is called \textit{restitution}.
 		\end{itemize}  
 
+\end{itemize}
+
+\begin{columns}
+\begin{column}{.43\textwidth}
+\begin{figure}
+	\includegraphics[width=0.95\textwidth]{spiralbreak2tachy}
+	\caption{\label{fig:frog1}Idealised diagram of: (a), normal heatbeat propagation; (b), tachycardia and (c), fibrillation. }
+	%\end{wrapfigure}
+	\end{figure}
 
 
-
-
-	\item \textbf{\textit{ How AF Occurs}}: AF is correlated to the amount of \textbf{ fibrosis} in the cardiac tissue which generates a process called \textit{ reentry}. \\
-	During \textit{ reentry} the electric signal wavefront propagation breaks. 
-	Even though many treatments have been developed, the mechanisms behind this condition are not completely understood and AF remains a major topic in medical research. \\
-	%The current research revolves around three possible approaches:
-
-
-%\begin{frame}
-%\smartdiagram[bubble diagram]{Current research,
- %Physiological \\ models, Image-Based \\ Models, \textbf{ CA Models}, antiarrhythmic \\ drugs) }
-% \end{frame}
- \item \textbf{\textit{Base for our Research}}: Our research is based on expanding on the work done by Kim Christensen which models the left atrium on a 2D surface.
+\end{column}
+\begin{column}{.54\textwidth}
+\begin{itemize}
+	\item \textbf{\textit{How AF Occurs}}: AF is correlated to the amount of \textbf{ fibrosis}---which is the scarring of cells. This creates dysfunctional/inactive cells, decreasing the number of connections between the cells in the cardiac tissue. This promotes a process called \textit{ reentry}.,\\
+	during which, the electric signal wavefront propagation breaks. 
+	Even though many treatments have been developed, the reentry mechanism is not completely understood and , as such, AF remains a major topic in medical research. \\
 	\end{itemize}
 
+	
+	
+\end{column}
+
+\end{columns}
+
+	\begin{itemize}
+	
+	
+	%The current research revolves around three possible approaches:
+ \item \textbf{\textit{Base for our Research}}: Our research is based on expanding on the work done by Christensen \emph{et al.} which models the left atrium on a 2D surface \cite{Christensen}.
+	\end{itemize}
 \end{block}
 \begin{block}{Our Objectives}
 
 \begin{enumerate}
 \item Replicate the model of a 2D cardiac atrium from Christensen \emph{et al.}
 \item  Translating the model onto a sphere in order to simulate the effects of a more realistic morphology. 
-\item Incorporate restitution of heart cells into the original model (where the \textit{refractory period} is set to a constant).
-\item Observe if there is a higher risk of Atrial fibrillation in the original model or in the new ones we developed.
+\item Incorporate restitution of heart cells into the original model (where the \textit{refractory period} is instead set to a constant).
+\item Observe the risk of AF in the new models and compare it with the original model.
 \end{enumerate}
 
 
@@ -153,7 +176,7 @@
 
 %\centering
 \begin{figure}
-\includegraphics[width=0.7\linewidth]{connectome}
+\includegraphics[width=0.6\linewidth]{connectome}
 \caption{The structure of our sphere model on which we implemented electric impulse propagation using a network. The connections in red are differentiated from the connection in blue in order to introduce fibrosis in the model. Fibrosis is indeed modelled by removing a percentage of the red connections. }
 \end{figure}
 
@@ -182,12 +205,12 @@
 
 
 
-\begin{block}{Model on a Sphere}
+\begin{block}{Implementing Our Sphere Model}
 
 
 
 
-In research by Fedotov, a model of the atrium was constructed on the surface of a triangulated sphere to model spiral rotor waves on a closed, heterogeneous surface \cite{Fedotov}. Inspired by this research, we built a new model which translates Kim Christensen model of a two dimensional atrium on a sphere
+In research by Fedotov, a model of the atrium was constructed on the surface of a triangulated sphere to AF on a closed, heterogeneous surface \cite{Fedotov}. Inspired by this research, we built a new model which translates Kim Christensen model of a two dimensional atrium onto a sphere.
 
 
 %\end{block}
@@ -202,10 +225,10 @@ In research by Fedotov, a model of the atrium was constructed on the surface of 
 
 \end{block}
 
-\begin{block}{Implementing Restitution }
+\begin{block}{Implementing the Restitution Model}
 
-In Christensen \emph{et al.}'s model, the refractory period of each muscle cell was always fixed, this is not what happens in a real heart.
-In a real heart the refractory period depends on the heart beat rate and on the last time each cell it was excited. As already mentioned before he relationship between refractory period and heart beat rate is called restitution. We introduced restitution in In Christensen \emph{et al.}'s model in order to study its effects.
+In Christensen \emph{et al.}'s model, the refractory period of each muscle cell was always fixed to a constant.
+In a real heart, the refractory period depends on the heart beat rate and on the last time each cell it was excited. The relationship between refractory period and heart beat rate is called restitution. We introduced a linear restitution function in  Christensen \emph{et al.}'s model in order to study its effects.
 \end{block}
 
 
@@ -214,7 +237,7 @@ In a real heart the refractory period depends on the heart beat rate and on the 
 %\centering
 \begin{figure}
 \includegraphics[width=0.65\linewidth]{xriskcurvesphere}
-\caption{Risk of AF (defined as the fraction of time spent in fibrillation) for the three models studied (Prof Christensen's model, restitution curve model, sphere model) averaged over 100 simulations against percentage of transversal connections($\nu$) in the model. A healthy heart is expected to have $\nu$ close to 1 while a heart with fibrosis low $\nu$.}
+\caption{Risk of AF (defined as the fraction of time spent in fibrillation) for the three models studied (Prof Christensen's model, restitution curve model, sphere model) averaged over 100 simulations against percentage of transversal connections ($\nu$) in the model. A healthy heart is expected to have $\nu$ close to 1 while a heart with fibrosis low $\nu$.}
 \end{figure}
 
 \end{block}
@@ -234,10 +257,38 @@ A simplified mechanism of AF had been achieved by Christensen \emph{et al.'s} mo
 %----------------------------------------------------------------------------------------
 
 \begin{block}{References}
-        
-\nocite{*} % Insert publications even if they are not cited in the poster
-\small{\bibliographystyle{unsrt}
-\bibliography{sample1}}
+\begin{thebibliography}{1}
+
+%\nocite{*} % Insert publications even if they are not cited in the poster
+%\small{\bibliographystyle{unsrt}
+%\bibliography{sample1}}
+\bibitem{Comtois}
+P. Comtois, J. Kneller, S. Nattel,
+\emph{Of circles and spirals: Bridging the gap between the leading circle and spiral wave concepts of cardiac reentry}
+Europace. 2005 Sep;7 Suppl 2:10-20.
+DOI: http://dx.doi.org/10.1016/j.eupc.2005.05.011
+
+
+
+\bibitem{Alonso}
+S. Alonso, M. Bar and B. Echebarria
+\emph{Nonlinear physics of electrical wave
+propagation in the heart: a review},
+Rep. Prog. Phys. 79 (2016) 096601, 
+doi:10.1088/0034-4885/79/9/096601
+
+\bibitem{Christensen}
+Kim Christensen, Kishan A. Manani, and Nicholas S. Peters
+\emph{Simple Model for Identifying Critical Regions in Atrial Fibrillation}
+Phys. Rev. Lett. 114, 028104 – Published 16 January 2015
+
+
+
+\bibitem{Fedotov}
+N. M. Fedotov,  A. I. Oferkin, and S. V. Zhary,
+\emph{Modeling Sources of Atrial Fibrillation on a Triangulated Sphere}
+Biomedical Engineering, Vol. 49, No. 2, July, 2015, pp. 112115. 
+\end{thebibliography}
 
 \end{block}
 

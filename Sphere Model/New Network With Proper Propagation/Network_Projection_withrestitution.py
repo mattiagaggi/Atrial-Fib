@@ -189,6 +189,7 @@ class create_network:
         self.nodes[self.nodes==-1]=0
         
         #maybe switch these two
+        self.tempgrid[self.tempgrid>20000] = 220
         self.refr=self.maparray[self.tempgrid.astype(int)]
         
       
