@@ -37,6 +37,8 @@
 \usepackage{booktabs} % Top and bottom rules for tables
 
 \graphicspath{{figures/}} % Location of the graphics files
+\usepackage{graphicx}
+\usepackage{wrapfig}
 
 \usecaptiontemplate{\small\structure{\insertcaptionname~\insertcaptionnumber: }\insertcaption} % A fix for figure numbering
 
@@ -77,16 +79,7 @@
 %	OBJECTIVES
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Objectives}
 
-\begin{enumerate}
-\item Replicate original model of Atrial Fibrillation (AF) from Christensen \emph{et al.}
-\item Incorporate restitution of heart cells into the model. 
-\item Model on more realistic morphology via translating model onto a sphere and adding restitution. 
-\item Analyse to see if there is enhanced risk with the new model, using new morphology and model basis, to create a more accurate AF model.
-\end{enumerate}
-
-\end{block}
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
@@ -95,54 +88,73 @@
 \begin{block}{Introduction}
 
 \begin{itemize}
-\item Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major causes of stroke and heart failure. AF is also the most widespread cardiac condition, with over 30 millions of people worldwide suffering from it. In the UK, expenses related to this disease account for more than $1\%$ of the total budget of the National Health Service, which is more than $800$ million pounds. Atrial fibrillation usually manifests itself in patients affected through alterations of the normal cardiac rhythm lasting short periods of time (also called fibrillation episodes).\\
+\item Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major causes of stroke and heart failure. AF is also the most widespread cardiac condition, with over 30 millions of people worldwide suffering from it. In the UK, expenses related to this disease account for more than $1\%$ of the total budget of the National Health Service, which is more than $800$ \textbf{ million pounds} .\\*
+ Atrial fibrillation usually manifests itself in patients affected through alterations of the normal cardiac rhythm lasting short periods of time (also called fibrillation episodes).\\
 \end{itemize}
 
 
 \end{block}
 
 
-\begin{block}{Phenomenology of Atrial Fibrillation}
+\begin{block}{Phenomenology of the Heart}
 
 
 	\begin{itemize}
-	\item Each heart beat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres 		and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to the polarisation mechanism of the cell 		membrane. 
+	\item \textbf{\textit{Heart Beats Propagation}}: Each heart beat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres 		and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to the polarisation mechanism of the cell membrane. 
+
+\begin{wrapfigure}{R}{0.3\textwidth}
+\centering
+\includegraphics[width=0.25\textwidth]{heart}
+\caption{\label{fig:frog1}This is a figure caption.}
+\end{wrapfigure}
 
 
-	\item When the electric impulse propagates a single muscle cell goes through three stages:
+	\item \textbf{ \textit{Cells Excitation Rules}}: As the electric impulse propagates a single muscle cell goes through three stages:
 
 		\begin{itemize}
  		 \item \textit{Excitable state}: the muscle cell is at rest with a negative built up potential.
   										
   		\item \textit{Excited state}: the muscle cell is excited by its excited neighbours and the Voltage of the cell is at its peak. 
-  		\item \textit{Refractory state} :the muscle cell goes through a phase during which it can't be excited again - this period is called \textit{refractory period)}.
+  		\item \textit{Refractory state} :the muscle cell goes through a phase during which it can't be excited again - this period is called \textit{refractory period}. The \textit{refractory period} duration is related to the heart beat rate and this relationship is called \textit{restitution relationship}.
 		\end{itemize}  
 
-	\item Where the refractory period depends on the last time a cell was excited and is always fixed to a constant.\\
 
 
 
-	\item AF is correlated to the amount of \textbf{ fibrosis} in the cardiac tissue which generates a process called reentry. \\
-	During reentry the electric signal wavefront propagation breaks. It has been shown a clear link between fibrosis and AF
+
+	\item \textbf{\textit{ How AF Occurs}}: AF is correlated to the amount of \textbf{ fibrosis} in the cardiac tissue which generates a process called \textit{ reentry}. \\
+	During \textit{ reentry} the electric signal wavefront propagation breaks. 
 	Even though many treatments have been developed, the mechanisms behind this condition are not completely understood and AF remains a major topic in medical research. \\
-	The current research revolves around three possible approaches:
-	\end{itemize}
+	%The current research revolves around three possible approaches:
+
 
 %\begin{frame}
 %\smartdiagram[bubble diagram]{Current research,
  %Physiological \\ models, Image-Based \\ Models, \textbf{ CA Models}, antiarrhythmic \\ drugs) }
 % \end{frame}
- Our research is based on expanding on the work done by Kim Christensen on CA (Cellular Automata) models \cite{Christensen}.
+ \item \textbf{\textit{Base for our Research}}: Our research is based on expanding on the work done by Kim Christensen which models the left atrium on a 2D surface.
+	\end{itemize}
+
+\end{block}
+\begin{block}{Our Objectives}
+
+\begin{enumerate}
+\item Replicate the model of a 2D cardiac atrium from Christensen \emph{et al.}
+\item  Translating the model onto a sphere in order to simulate the effects of a more realistic morphology. 
+\item Incorporate restitution of heart cells into the original model (where the \textit{refractory period} is set to a constant).
+\item Observe if there is a higher risk of Atrial fibrillation in the original model or in the new ones we developed.
+\end{enumerate}
 
 
 \end{block}
 
-\begin{block}{Results: Connectome}
+
+\begin{block}{Our Sphere model's Morphology}
 
 %\centering
 \begin{figure}
 \includegraphics[width=0.7\linewidth]{connectome}
-\caption{Hemisphere of possible connections defined on the sphere model. Each vertex corresponds to a face. Longitudinal connections are in red, transversal are in blue. Starts from a single pentagon on the icosphere and then can be seen to propagate outwards. }
+\caption{The structure of our sphere model on which we implemented electric impulse propagation using a network. The connections in red are differentiated from the connection in blue in order to introduce fibrosis in the model. Fibrosis is indeed modelled by removing a percentage of the red connections. }
 \end{figure}
 
 \end{block}
@@ -164,41 +176,45 @@
 
 %------------------------------------------------
 
-\begin{block}{Results: Sphere and Previous model}
-
-%\centering
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{combchristensenspherefib}
-\caption{Figures of: Christensen \emph{et al.}'s model at times of t=1, t=60 and t=470,for a, b and c, respectively, and the sphere model at times of t=1, t=41 and t=241 for d, e and f respectively. Normal wavefront propagation seen starting from pentagonal node in the leftmost figures.In figure e, the excitation wavefront propagates around the sphere, mimicking Christensen \emph{et al.}'s model, b. On the right, chaotic, fibrillatory activity has arisen from reentry circuit spontaneously manifesting itself in c and f.}
-\end{figure}
-
-\end{block}
 
 
-\begin{block}{Implementing Restitution }
 
-In Christensen \emph{et al.}'s model, the refractory period of each muscle cell was always fixed, this is not what happens in a real heart.
-In a real heart the refractory period depends on the heart beat rate and on the last time each cell it was excited. The relationship between refractory period and heart beat rate is called restitution.
-\end{block}
 
 
 
 \begin{block}{Model on a Sphere}
 
 
-\begin{itemize}
-\item In research by Fedotov, a cellular automaton model was constructed on the surface of a triangulated sphere to model spiral rotor waves on a closed, heterogeneous surface \cite{Fedotov}. It was shown that both a decrease in refractory period and conduction velocity from a "healthy" myocardium state, where no irregular excitation waves above 300bpm are observed, resulted in an area where spiral waves were formed. In addition, a multi-electrode system was created to study the localization of AF sources by simulated electrograms. 
-\end{itemize}
+
+
+In research by Fedotov, a model of the atrium was constructed on the surface of a triangulated sphere to model spiral rotor waves on a closed, heterogeneous surface \cite{Fedotov}. Inspired by this research, we built a new model which translates Kim Christensen model of a two dimensional atrium on a sphere
+
+
+%\end{block}
+%------------------------------------------------
+%\begin{block}{Results: Sphere and Previous model}
+
+%\centering
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{combchristensenspherefib}
+\caption{A comparison between Christensen \emph{et al.}'s model  (a, b and c)  and the sphere model (for d, e and f ) evolving in time in a not-healty atrium. Normal wavefront propagation is seen starting in the leftmost figures .In figures b,e the excitation wavefront propagates unevenly due to fibrosis, starting reentry. On the right AF has fully arisen from both models generating chaotic fibrillatory activity.}
+\end{figure}
 
 \end{block}
-%------------------------------------------------
 
-\begin{block}{Results: Figure}
+\begin{block}{Implementing Restitution }
+
+In Christensen \emph{et al.}'s model, the refractory period of each muscle cell was always fixed, this is not what happens in a real heart.
+In a real heart the refractory period depends on the heart beat rate and on the last time each cell it was excited. As already mentioned before he relationship between refractory period and heart beat rate is called restitution. We introduced restitution in In Christensen \emph{et al.}'s model in order to study its effects.
+\end{block}
+
+
+\begin{block}{Results: Risk of AF for the three models}
 
 %\centering
 \begin{figure}
 \includegraphics[width=0.65\linewidth]{xriskcurvesphere}
-\caption{Figure of the Risk Curve of all the systems analysed. Y-axis: probablility of a realisation being in AF, x-axis: value of $\nu$, the  probability of a transversal connection between cells}
+\caption{Risk of AF (defined as the fraction of time spent in fibrillation) for the three models studied (Prof Christensen's model, restitution curve model, sphere model) averaged over 100 simulations against percentage of transversal connections($\nu$) in the model. A healthy heart is expected to have $\nu$ close to 1 while a heart with fibrosis low $\nu$.}
 \end{figure}
 
 \end{block}
@@ -208,9 +224,9 @@ In a real heart the refractory period depends on the heart beat rate and on the 
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Conclusion}
-\begin{itemize}
-\item A simplified mechanism of AF had been achieved by Christensen \emph{et al.'s} model through the modelling of heart muscle fibre connectivity while incorporating the effects of fibrosis. This model was improved upon by the additon of the restitution process, making AF more risky. By translating the model to a sphere, the steady growth of heart muscle fibres from the sino-atrial node could be replicated, while simulating a more realisitc morphology of the atria. The risk of AF was seen to be higher, than with the original model. Verification of this model can be achieved with the analysis of the proportion of fibrosis in atrial heart tissue. 
-\end{itemize}
+
+A simplified mechanism of AF had been achieved by Christensen \emph{et al.'s} model through the modelling of the atrium muscle tissue while incorporating the effects of fibrosis. We implemented this model by adding more realistic features by using a more realistic heart morphology and restitution. Our results show a higher risk of AF for the new models created.
+
 \end{block}
 
 %----------------------------------------------------------------------------------------
