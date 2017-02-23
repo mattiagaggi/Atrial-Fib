@@ -101,7 +101,7 @@ Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major ca
 \begin{columns}
 \begin{column}{.54\textwidth}
 	\begin{itemize}
-	\item \textbf{\textit{Heartbeat Propagation}}: Each heartbeat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres, and finally from the ventricular endocardium to the ventricular epicardium. The electric signal is conducted in the cardiac muscle cells thanks to polarisation (change in voltage) of the cell membrane. 
+	\item \textbf{\textit{Heartbeat Propagation}}: Each heartbeat originates as an electric signal in the sinoatrial (SA) node that propagates first into the atria, then through the atrioventricular (AV) node, through Purkinje fibres, and finally from the ventricular endocardium to the ventricular epicardium (Figure \ref{fig:heart}). The electric signal is conducted in the cardiac muscle cells thanks to polarisation (change in voltage) of the cell membrane \cite{Comtois}. 
 	\end{itemize}
 \end{column}
 
@@ -111,7 +111,7 @@ Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major ca
 	
 	
 	\includegraphics[width=0.95\textwidth]{heart}
-	\caption{\label{fig:frog1}This is the structure of the heart.}
+	\caption{\label{fig:heart}This is the structure of the heart.}
 	%\end{wrapfigure}
 	\end{figure}
 \end{column}
@@ -133,7 +133,7 @@ Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major ca
 \begin{column}{.43\textwidth}
 \begin{figure}
 	\includegraphics[width=0.95\textwidth]{spiralbreak2tachy}
-	\caption{\label{fig:frog1}Idealised diagram of: (a), normal heatbeat propagation; (b), tachycardia and (c), fibrillation. }
+	\caption{\label{fig:fib}Idealised diagram of: (a), normal heatbeat propagation; (b), tachycardia and (c), fibrillation. }
 	%\end{wrapfigure}
 	\end{figure}
 
@@ -142,7 +142,7 @@ Atrial Fibrillation (AF) is a type of cardiac arrhythmia and one of the major ca
 \begin{column}{.54\textwidth}
 \begin{itemize}
 	\item \textbf{\textit{How AF Occurs}}: AF is correlated to the amount of \textbf{ fibrosis}---which is the scarring of cells. This creates dysfunctional/inactive cells, decreasing the number of connections between the cells in the cardiac tissue. This promotes a process called \textit{ reentry}.,\\
-	during which, the electric signal wavefront propagation breaks. 
+	during which, the electric signal wavefront propagation breaks \cite{Alonso}. 
 	Even though many treatments have been developed, the reentry mechanism is not completely understood and , as such, AF remains a major topic in medical research. \\
 	\end{itemize}
 
@@ -227,7 +227,7 @@ In research by Fedotov, a model of the atrium was constructed on the surface of 
 
 \begin{block}{Implementing the Restitution Model}
 
-In Christensen \emph{et al.}'s model, the refractory period of each muscle cell was always fixed to a constant.
+In Christensen \emph{et al.}'s model \cite{Christensen}, the refractory period of each muscle cell was always fixed to a constant.
 In a real heart, the refractory period depends on the heart beat rate and on the last time each cell it was excited. The relationship between refractory period and heart beat rate is called restitution. We introduced a linear restitution function in  Christensen \emph{et al.}'s model in order to study its effects.
 \end{block}
 
