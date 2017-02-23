@@ -123,7 +123,7 @@
 
 		\begin{itemize}
  		 \item \textit{Rest/Excitable state}: the muscle cell is at rest with constant negative potential.								
-  		\item \textit{Excited state}: the muscle cell is excited by adjacent excited cells it is connected to, making the voltage is at a maximum. 
+  		\item \textit{Excited state}: the muscle cell is excited by adjacent excited cells it is connected to, making the voltage a maximum. 
   		\item \textit{Refractory state}: the muscle cell goes through a phase during which it can't be excited again---a steady decrease in voltage until its matches the rest state voltage---this period is called \textit{refractory period}. The refractory period duration is modulated by the cell excitation rate; this relationship is called \textit{restitution}.
 		\end{itemize}  
 
@@ -141,7 +141,7 @@
 \end{column}
 \begin{column}{.54\textwidth}
 \begin{itemize}
-	\item \textbf{\textit{How AF Occurs}}: AF is correlated to the amount of \textbf{ fibrosis}---the scarring of cells. This scarring creates dysfunctional/inactive cells, decreasing the number of connections between cells in the cardiac tissue. The absence of connections promotes a process called \textit{reentry}, during which, the electric signal wavefront propagation chaotically breaks, initiating fibrillation \cite{Alonso}. Even though many treatments have been developed, the reentry mechanism is not completely understood and, as such, AF remains a major topic in medical research. \\
+	\item \textbf{\textit{How AF Occurs}}: AF is correlated to the amount of \textbf{fibrosis}---the scarring of cells. This scarring creates dysfunctional/inactive cells, decreasing the number of connections between cells in the cardiac tissue. The absence of connections promotes a process called \textit{reentry}, during which, the electric signal wavefront propagation chaotically breaks, initiating fibrillation \cite{Alonso}. Even though many treatments have been developed, the reentry mechanism is not completely understood and, as such, AF remains a major topic in medical research. \\
 	\end{itemize}
 
 	
@@ -161,7 +161,7 @@
 
 \begin{enumerate}
 \item Replicate the model of the 2D cardiac atrium from Christensen \emph{et al.}
-\item  Translate the model onto a sphere in order to simulate the effects of a more realistic morphology. 
+\item  Translate the model onto a sphere in order to simulate the effects of a more realistic morphology and muscle fibre growth. 
 \item Incorporate restitution of heart cells into the original model (such that the \textit{refractory period} of cells is modulated).
 \item Observe the risk of AF in the new models and compare with the original model.
 \end{enumerate}
@@ -228,7 +228,7 @@ In research by Fedotov, a model of the atrium was constructed on the surface of 
 %\centering
 \begin{figure}
 \includegraphics[width=0.8\linewidth]{combchristensenspherefib}
-\caption{A comparison between Christensen \emph{et al.}'s model  (a, b and c)  and the sphere model (for d, e and f ) evolving in time in a fibrotic atrium. Normal wavefront propagation is seen starting in the leftmost figures .In figures b,e the excitation wavefront propagates unevenly due to fibrosis, initiating reentry. On the right, AF has spontaneously arisen from both models.}
+\caption{A comparison between Christensen \emph{et al.}'s model  (a, b and c)  and the sphere model (for d, e and f ) evolving in time in a fibrotic atrium. Normal wavefront propagation is seen starting in the leftmost figures. In figures b and e the excitation wavefront propagates unevenly due to fibrosis, initiating reentry. On the right, AF has spontaneously arisen from both models.}
 \end{figure}
 
 \end{block}
@@ -245,7 +245,7 @@ In a real heart, the refractory period depends on the heart cell activation rate
 %\centering
 \begin{figure}
 \includegraphics[width=0.65\linewidth]{xriskcurvesphere}
-\caption{Risk of AF (defined as the fraction of time spent in fibrillation) for the three models studied: Christensen \emph{et al.}'s model ("Kishan's Data"); our original model; a restitution model and the sphere model. Each point is an average risk over 50 simulations, using a specified percentage of transversal connections ($\nu$), mimicking fibrosis levels. A healthy heart is expected to have $\nu$ close to 1 while a fibrotic heart has low $\nu$. Incorporating restitution into original model increases the risk. The sphere model incorporating fibre growth increases the risk further, producing a more realistic model as less fibrosis is necessary to induce AF. }
+\caption{Risk of AF (defined as the fraction of time spent in fibrillation) for the models studied: Christensen \emph{et al.}'s model ("Kishan's Data"); our original model; a restitution model and the sphere model. Each point represents an average risk over 50 simulations, using a specified percentage of transversal connections ($\nu$), mimicking fibrosis levels. A healthy heart is expected to have $\nu$ close to 1 while a fibrotic heart has low $\nu$. Incorporating restitution into original model increases the risk. The sphere model increases the risk further, producing a more realistic model as less fibrosis is necessary to induce AF. }
 \end{figure}
 
 \end{block}
@@ -256,7 +256,7 @@ In a real heart, the refractory period depends on the heart cell activation rate
 
 \begin{block}{Conclusion}
 
-A simplified mechanism of AF had been achieved by replication of Christensen \emph{et al.'s} model: simulating a sheet of atrial muscle tissue and incorporating the effects of fibrosis. We incorporated more features into this model: a more realistic heart morphology,with muscle fibre growth, using a sphere, and restitution. Our results show a higher risk of AF for the new models created. This produced more realistic models as less fibrosis is necessary to induce AF.
+A simplified mechanism of AF had been achieved by replication of Christensen \emph{et al.}'s model: simulating a sheet of atrial muscle tissue and incorporating the effects of fibrosis. We introduced more features into this model: a more realistic heart morphology, with muscle fibre growth, using a sphere, and restitution. Our results show a higher risk of AF for the new models created, resulting in more realistic models, as less fibrosis is necessary to induce AF.
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -272,29 +272,29 @@ A simplified mechanism of AF had been achieved by replication of Christensen \em
 \small
 \bibitem{Comtois}
 P. Comtois, J. Kneller, S. Nattel,
-\emph{Of circles and spirals: Bridging the gap between the leading circle and spiral wave concepts of cardiac reentry}
-Europace. 2005 Sep;7 Suppl 2:10-20.
+\emph{Of circles and spirals: Bridging the gap between the leading circle and spiral wave concepts of cardiac reentry}, 
+Europace. 2005 Sep;7 Suppl 2:10-20., 
 DOI: http://dx.doi.org/10.1016/j.eupc.2005.05.011
 
 
 
 \bibitem{Alonso}
-S. Alonso, M. Bar and B. Echebarria
+S. Alonso, M. Bar and B. Echebarria, 
 \emph{Nonlinear physics of electrical wave
 propagation in the heart: a review},
 Rep. Prog. Phys. 79 (2016) 096601, 
 doi:10.1088/0034-4885/79/9/096601
 
 \bibitem{Christensen}
-Kim Christensen, Kishan A. Manani, and Nicholas S. Peters
-\emph{Simple Model for Identifying Critical Regions in Atrial Fibrillation}
+Kim Christensen, Kishan A. Manani, and Nicholas S. Peters, 
+\emph{Simple Model for Identifying Critical Regions in Atrial Fibrillation}, 
 Phys. Rev. Lett. 114, 028104 – Published 16 January 2015
 
 
 
 \bibitem{Fedotov}
 N. M. Fedotov,  A. I. Oferkin, and S. V. Zhary,
-\emph{Modeling Sources of Atrial Fibrillation on a Triangulated Sphere}
+\emph{Modeling Sources of Atrial Fibrillation on a Triangulated Sphere}, 
 Biomedical Engineering, Vol. 49, No. 2, July, 2015, pp. 112115. 
 \end{thebibliography}
 
