@@ -97,7 +97,7 @@ class create_network:
      
         self.refr=np.zeros(self.size)
         self.tempgrid=np.zeros(self.size)
-        self.tempgrid+=220
+        self.tempgrid+=110
         
        
         
@@ -128,7 +128,7 @@ class create_network:
         stepsz=z/(3*a)
         stepsz=np.round(stepsz)
         
-        while len(stepsz)<40000:
+        while len(stepsz)<300:
             
             stepsz=np.append(stepsz,(50./a))
        
@@ -189,7 +189,7 @@ class create_network:
         self.nodes[self.nodes==-1]=0
         
         #maybe switch these two
-        self.tempgrid[self.tempgrid>20000] = 220
+        self.tempgrid[self.tempgrid>=300] = 110
         self.refr=self.maparray[self.tempgrid.astype(int)]
         
       
@@ -216,7 +216,7 @@ class create_network:
         
         self.refr=np.zeros(self.size)
         self.tempgrid=np.zeros(self.size)
-        self.tempgrid+=220
+        self.tempgrid+=110
                 
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
@@ -567,7 +567,7 @@ colours=pickle.load(g)
 
 """
 
-"""
+
 s = sp.Sphere( recursion_level = 6 )
 conn = Define_Connections(s)
 colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
@@ -582,15 +582,15 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    p_dysf = 0.1,
                    p_unexcitable = 0.1,
                    excitation = 12, 
-                   hbs = 55)
+                   hbs = 55,recursion=6)
 
-runc = run(network = n, plot=True,store=True,runs=1000)
+#runc = run(network = n, plot=True,store=True,runs=1000)
 
-"""
+
 #for storing data instead
 
-#runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
-#runc.propagate_storage()
+runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
+runc.propagate_storage()
 #runc.animator(s)
 
 """
