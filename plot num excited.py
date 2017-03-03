@@ -1,0 +1,5 @@
+plt.plot(range(len(runc.num_excited)),np.array(runc.num_excited)/320.)
+plt.xlabel("time steps")
+plt.ylabel("normalised number of excited cells")
+plt.plot(range(len(r.num_excited)),np.array(r.num_excited)/200.)
+plt.show()

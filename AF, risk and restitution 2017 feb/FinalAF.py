@@ -400,10 +400,11 @@ class run: #Class to run code
         
 
     
-"""
-h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.88,p_dysf=0.05)
+
+h = heart(L=200,p_unexcitable=0.05,p_fibrosis= 0.9,p_dysf=0.05)
 h.electrocardiosetup([100,100])
-r = run(heart=h, plot=True,store=True,stepsstored=3000,replot=False)
+r = run(heart=h, plot=False,store=True,stepsstored=5000,replot=False)
 #r.plotecg()
 plt.show()
+"""
 """

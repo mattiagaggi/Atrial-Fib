@@ -57,12 +57,10 @@ class create_network:
         self.excitation=excitation
         self.heartbeatssteps=hbs
         self.totalruns = 0
-    
         self.array_vertical=array_vertical
         self.impulse_start=impulse_start
         self.size=len(array_nodesindices)
         self.nodes=np.zeros(self.size)
-       
         self.array_transv=[]
         self.excited=[]
         self.dysf=np.random.rand(self.size)  #create array of dysf cells
@@ -70,7 +68,9 @@ class create_network:
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
         self.array_alltransv=array_transv
-       
+        
+        self.heat_map=False
+        self.heat=np.zeros(self.size)
         
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
@@ -128,7 +128,8 @@ class create_network:
             newnodes[newnodes>0]=1
             newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
             newnodes*= (self.nodes==0) #removes refractory cells
-        
+            if self.heat_map==True:
+                self.heat+=newnodes
             self.excited=np.flatnonzero(newnodes)
             self.excited=self.excited.tolist()
     
@@ -137,10 +138,10 @@ class create_network:
         self.nodes[self.nodes==-1]=0
         self.nodes += newnodes*self.excitation
         #print ("excited cells are",self.excited)
-     
+   
         
     
-    def onestep_checktime(self):
+    def onestep_checktime(self,heat_map=False):
         
         newnodes=np.zeros(self.size)
         time1=time.time()
@@ -170,7 +171,8 @@ class create_network:
             newnodes[newnodes>0]=1
             newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
             newnodes*= (self.nodes==0) #removes refractory cells
-        
+           
+                
             self.excited=np.flatnonzero(newnodes)
             self.excited=self.excited.tolist()
     
@@ -230,28 +232,33 @@ class run:
         self.excitedhistory=[]
         self.nodeshistory.append(self.network.nodes)
         self.num_excited=[]
-        
         self.fib_threshold=fib_threshold
         self.infibrillation=False
         self.tfibrillation=[]
-        
         self.zeroexcited=[]
+        self.heat=np.arange(len(network.nodes))
         
         
-    def propagate_storage(self):
+    def propagate_storage(self,heat_map):
       
         #print ("you set store==", self.store)
+        
+        if heat_map==True:
+            self.network.heat_map=True
+        
+        
         for times in range(self.runs):
                 
             if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
                 for elements in self.network.impulse_start:
                     self.network.excite(elements)
-                    
+                
             self.time+=1
             self.network.totalruns+=1
             if self.store==True:
                 #self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
+                
                 
                 if self.num_excited[-1]>=self.fib_threshold: # if more excited cells than threshold enters fib
                     self.fibrillation()
@@ -308,16 +315,16 @@ class run:
         if self.store==True:
                 self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
-        #plt.show()
+        plt.show()
 
           
             
                 
                    
                 
-                
+    """            
     def propagate_a(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -331,7 +338,7 @@ class run:
             colours = self.network.nodes
             colours = colours/sum(colours) 
             yield colours
-    
+    """
             
                 
     def long_edges(x, y, triangles, radio=22):
@@ -562,7 +569,7 @@ colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 0.1,
+                   p_transv = 0.35,
                    impulse_start = pent_ind,
                    p_dysf = 0.05,
                    p_unexcitable = 0.05,
@@ -570,15 +577,16 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    hbs = 110)
 
 #runc = run(network = n, plot=False,store=False,runs=1)
-#runc.propagate_storage()
+
 #colours = n.nodes
 #s.plot_sphere(colours)
 
 
 #for storing data instead
 
-#runc = run(network = n, plot=False,store=False,runs=2000,fib_threshold=350)
-#runc.propagate_storage()
+runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=350)
+#runc.propagate_storage(heat_map=True)
+#s.plot_sphere(n.heat/(1000./25))
 #runc.animator(s)
 
 """
