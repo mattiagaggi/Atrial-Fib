@@ -41,7 +41,7 @@ def trial():
     
 
 class create_network:
-    def __init__(self,array_nodesindices,array_vertical,array_transv,p_transv,impulse_start,p_dysf,p_unexcitable, excitation, hbs,recursion=5):
+    def __init__(self,array_nodesindices,array_vertical,array_transv,p_transv,impulse_start,p_dysf,p_unexcitable, excitation, hbs):
         """
         this inputs array_nodesindices as a list of faces indices,
         
@@ -57,16 +57,10 @@ class create_network:
         self.excitation=excitation
         self.heartbeatssteps=hbs
         self.totalruns = 0
-        
-        self.recursion=recursion
-        print ("recursion=",self.recursion,"make sure the restitution curve is set accordingly")
-        
-        
         self.array_vertical=array_vertical
         self.impulse_start=impulse_start
         self.size=len(array_nodesindices)
         self.nodes=np.zeros(self.size)
-       
         self.array_transv=[]
         self.excited=[]
         self.dysf=np.random.rand(self.size)  #create array of dysf cells
@@ -76,10 +70,13 @@ class create_network:
         self.array_alltransv=array_transv
         
         self.heat_map=False
-        self.heat=np.zeros(self.size)
-        self.excitationtimes=np.zeros(self.size)
-        self.lastexcitation=np.zeros(self.size)
-        self.c=np.zeros(self.size)
+        
+        fileobj=open('tempgridinitialise.pkl','rb')
+        self.tempgrid=pickle.load(fileobj)
+        fileobj.close()
+      
+        self.var=np.zeros(self.size)
+        
         
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
@@ -97,56 +94,9 @@ class create_network:
                 self.connections[key].append(value)
             except KeyError:
                 self.connections[key]=[value]
-        
+        t1=time.time()
         #print ('initialisation time:',(t1-t0))
      
-        self.refr=np.zeros(self.size)
-        self.tempgrid=np.zeros(self.size)
-        self.tempgrid+=110
-        
-       
-        
-        if self.recursion==6:
-            a=2
-        elif self.recursion==5:
-            a=4
-        #in the case of the sphere we coarse grain the refractory period by an additional factor depending on the recursion
-        #for recursion 5 instead of 50 we have 12.5 therefore the factor a is 4
-        #for recursion 6 .......................25 ...........................2
-        
-        x=np.arange(0,800,3*a) #this is the time between impulses we choose step a*3 because we will divide by a*3 later
-        y=np.array([])
-        
-        #change this
-        for elements in x:   #make vector y with actual APD
-            if elements<=210:
-                y=np.append(y,90)
-            if elements>210 and  elements<=400:
-                y=np.append(y, ((130./190)*elements+(220-400*130/190)))
-            if elements>400:
-                y=np.append(y,220)
-        
-        z=y*150./220    #make z which is steps
-        stepsx=x/(3.*a) #coarse grain by a*3
-        stepsx=np.round(stepsx) #we need to round
-        stepsx=stepsx.astype(int)
-        stepsz=z/(3*a)
-        stepsz=np.round(stepsz)
-        
-        while len(stepsz)<300:
-            
-            stepsz=np.append(stepsz,(50./a))
-       
-        stepsz=stepsz.astype(int)      
-            
-        self.maparray=stepsz
-        t1=time.time()
-        print("network creation time", t1-t0)
-        
-    
-    
-    
-    
     def excite(self,nodeindex):
         
 
@@ -160,7 +110,7 @@ class create_network:
 
         newnodes=np.zeros(self.size)
        
-        self.tempgrid+=1
+        
         
         if len(self.excited)!=0:
             f = operator.itemgetter(*self.excited) # works well with list or array
@@ -184,40 +134,74 @@ class create_network:
             newnodes[newnodes>0]=1
             newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
             newnodes*= (self.nodes==0) #removes refractory cells
-        
+            if self.heat_map==True:
+                
+                self.tempgrid+=1
+                tempgridnotfib=np.copy(self.tempgrid)
+                tempgridnotfib*=newnodes
+                tempgridnotfib[tempgridnotfib<60]=0
+                self.var=np.vstack((self.var,tempgridnotfib))
+                
+                
+                self.tempgrid*=(newnodes==0)
+                
            
             self.excited=np.flatnonzero(newnodes)
-     
             self.excited=self.excited.tolist()
-            
     
       
         self.nodes-=1  
         self.nodes[self.nodes==-1]=0
-        
-        #maybe switch these two
-        self.tempgrid[self.tempgrid>=300] = 110
-        self.refr=self.maparray[self.tempgrid.astype(int)]
-        
-        toappend=newnodes*self.refr
-        
-        self.nodes += toappend
-        if self.heat_map==True:
-            self.heat+=toappend       
-            self.excitationtimes+=newnodes
-            
-            c=np.copy(newnodes)
-            c[self.tempgrid<160]=0
-            self.lastexcitation+=c*self.tempgrid
-            self.c+=c
-            
-        
-        self.tempgrid=self.tempgrid*(newnodes==0)
+        self.nodes += newnodes*self.excitation
         #print ("excited cells are",self.excited)
-     
+   
         
     
-   
+    def onestep_checktime(self):
+        
+        newnodes=np.zeros(self.size)
+        time1=time.time()
+        if len(self.excited)!=0:
+            f = operator.itemgetter(*self.excited) # works well with list or array
+            time2=time.time()
+            print("time taken",(time2-time1))
+            self.excited=f(self.connections) # alternative function: list(self.connections[_] for _ in self.excited) check which one is faster
+            try:
+                self.excited=list(chain(*self.excited))#the output of f() is ( [....],[...],....) this changes into a unique list
+            except TypeError:
+                self.excited=list(chain(self.excited))
+            time3=time.time()
+            print("time taken",(time3-time2)) #seems quick but can improve
+        
+            newnodes[self.excited]+=1   #this seems to take more than twice as much the previous operation 0.002
+            #need to account for repeated elements
+            time4=time.time()
+            print("time taken",(time4-time3))
+        
+            self.unexcited=np.random.rand(self.size)  #create array of dysf cells maybe can find a quicker way #this seems to take long 0.001
+            self.unexcited[self.unexcited < self.p_unexcitable] = 1
+            self.unexcited[self.unexcited != 1] = 0
+            time5=time.time()
+            print("time taken",(time5-time4))
+            
+            newnodes[newnodes>0]=1
+            newnodes=newnodes-(self.dysf*self.unexcited*newnodes) #remove excited dysf cells which  are not excited
+            newnodes*= (self.nodes==0) #removes refractory cells
+           
+                
+            self.excited=np.flatnonzero(newnodes)
+            self.excited=self.excited.tolist()
+            
+    
+        time6=time.time()
+        self.nodes-=1  
+        self.nodes[self.nodes==-1]=0
+        self.nodes += newnodes*self.excitation
+        print (np.flatnonzero(self.nodes))
+        time7=time.time()
+        print("time taken",(time7-time6))
+        
+        print ("total time", ( time7-time1))
    
     
     def reinitialise(self):
@@ -229,10 +213,6 @@ class create_network:
         self.dysf[self.dysf < self.p_dysf] = 1
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
-        
-        self.refr=np.zeros(self.size)
-        self.tempgrid=np.zeros(self.size)
-        self.tempgrid+=110
                 
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
@@ -269,31 +249,33 @@ class run:
         self.excitedhistory=[]
         self.nodeshistory.append(self.network.nodes)
         self.num_excited=[]
-        
         self.fib_threshold=fib_threshold
         self.infibrillation=False
         self.tfibrillation=[]
-        
         self.zeroexcited=[]
+        self.heat=np.arange(len(network.nodes))
         
         
-        
-    def propagate_storage(self,heat_map=False):
+    def propagate_storage(self,heat_map):
       
         #print ("you set store==", self.store)
+        
         if heat_map==True:
             self.network.heat_map=True
+        
+        
         for times in range(self.runs):
                 
             if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
                 for elements in self.network.impulse_start:
                     self.network.excite(elements)
-                    
+                
             self.time+=1
             self.network.totalruns+=1
             if self.store==True:
                 #self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
+                
                 
                 if self.num_excited[-1]>=self.fib_threshold: # if more excited cells than threshold enters fib
                     self.fibrillation()
@@ -357,9 +339,9 @@ class run:
                 
                    
                 
-                
+    """            
     def propagate_a(self):
-        for times in range(runs):
+        for times in range(self.runs):
             if self.store==True:
                 
                 if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
@@ -373,7 +355,7 @@ class run:
             colours = self.network.nodes
             colours = colours/sum(colours) 
             yield colours
-    
+    """
             
                 
     def long_edges(x, y, triangles, radio=22):
@@ -395,16 +377,16 @@ class run:
                 
     def plot_sphere_a(self, sph):
         self.fig = plt.figure()
-        #self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
+        self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
         #self.ax = self.fig.add_subplot(111)#, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
-        #self.ax.view_init(elev=90., azim=0)
+        self.ax.view_init(elev=40., azim=0)
         
         #self.ax.axis([-1,1,-1,1, -1, 1])
-        """
+        
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
         self.ax.set_zlim(-0.55, 0.55)
-        """
+        
         #plt.gca().set_aspect('equal')
         #axes = plt.gca()
         #axes.set_xlim([-4,4])
@@ -413,7 +395,7 @@ class run:
         #print("self.x", self.x)
         #self.avg = (self.xc+ self.yc+ self.zc)/3
         #self.x, self.y = sph.Mercator_Projection(-2.3*np.pi/8.)#sph.Mercator_Projection()#s#Mollewide
-        self.z = np.zeros(self.x.shape)
+        #self.z = np.zeros(self.x.shape)
         self.triangles = sph.ch.simplices
         #self.xy=np.vstack((self.x, self.y)).T
         #tri = Delaunay(self.xy)
@@ -423,13 +405,13 @@ class run:
         #self.surf = self.ax.
         #self.triangles = tri.simplices
         #mask = [s]
-        self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
+        #self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
         #self.surf.set_array(colours)
         #sph.icosahedron_vertices=np.asarray(sph.icosahedron_vertices)
         #self.ax.scatter(sph.icosahedron_vertices[:,0],sph.icosahedron_vertices[:,1], sph.icosahedron_vertices[:,2], c='red')
         
-        plt.show()
+        #plt.show()
         return self.surf, self.fig
         
 
@@ -450,9 +432,9 @@ class run:
         print("length of colours and x",len(colours), len(self.x))
         #
         #self.ax.clear()
-        self.surf = plt.tripcolor(self.x, self.y,  self.triangles, self.z, facecolors = colours[:len(self.triangles)], cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
-        #self.surf.set_array(colours)
+        #self.surf = plt.tripcolor(self.x, self.y,  self.triangles, self.z, facecolors = colours[:len(self.triangles)], cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=self.triangles, cmap=plt.cm.Greys_r, antialiased=False)
+        self.surf.set_array(colours)
         """
         self.ax.set_xlim(-0.55, 0.55)
         self.ax.set_ylim(-0.55, 0.55)
@@ -559,16 +541,19 @@ class Define_Connections:
         fig2 = plt.figure()
         ax2 = fig2.gca(projection='3d')
         #ax2.plot(phi_avg[:,0], phi_avg[:,1], phi_avg[:,2], 'r', markersize=1)
+        ax2.set_xlim(-0.55, 0.55)
+        ax2.set_ylim(-0.55, 0.55)
+        ax2.set_zlim(-0.55, 0.55)
         ax2.add_collection(lc1)
         ax2.add_collection(lc2)
         plt.show()
 
 
 
-"""
+s = sp.Sphere( recursion_level = 6 )
 #opening pickled files for reinstatement of connections
-s.construct_icosphere()
-
+#'s.construct_icosphere()
+"""
 d=open('horiz_conn_rec_6xconn.pkl', 'rb')
 hconn=pickle.load(d)
 
@@ -581,13 +566,18 @@ pent_ind=pickle.load(e)
 g=open('colours_rec_6xconn.pkl', 'rb')
 colours=pickle.load(g)
 
+#closing pickle files
+d.close()
+e.close()
+f.close()
+g.close()
+#h.close()
 #h=open('sph_rec_6xconn.pkl', 'rb')
 #s=pickle.load(h)
-
 """
 
 
-s = sp.Sphere( recursion_level = 6 )
+
 conn = Define_Connections(s)
 colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
@@ -596,32 +586,33 @@ colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using
 n = create_network(array_nodesindices = np.arange(len(colours)),
                    array_vertical = vconn,
                    array_transv = hconn,
-                   p_transv = 1,
+                   p_transv = 0.2,
                    impulse_start = pent_ind,
-                   p_dysf = 0.1,
-                   p_unexcitable = 0.1,
+                   p_dysf = 0.05,
+                   p_unexcitable = 0.05,
                    excitation = 25, 
-                   hbs = 110,recursion=6)
+                   hbs = 110)
 
-#runc = run(network = n, plot=True,store=True,runs=1000)
+#runc = run(network = n, plot=False,store=False,runs=1)
+
+#colours = n.nodes
+#s.plot_sphere(colours)
 
 
 #for storing data instead
 
-#runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=322)
-#runc.propagate_storage()
-#runc.animator(s)
-
-
-
-
-#for colormap refr
-h=2000
-runc = run(network = n, plot=False,store=True,runs=h,fib_threshold=350)
+runc = run(network = n, plot=False,store=True,runs=3500,fib_threshold=350)
 runc.propagate_storage(heat_map=True)
-n.heat[pent_ind]=0
-n.excitationtimes[n.excitationtimes==0]=1.
-#s.plot_colormap(n.heat/(n.excitationtimes))
+
+n.var=n.var[1:]
+variance=np.zeros(n.size)
+for el in range(n.size):
+    y=n.var[np.nonzero(n.var[:,el]),el]
+    variance[el]=np.std(y)
+    
+
+s.plot_colormap(variance)
+#runc.animator(s)
 
 """
 for recursion 5 
@@ -657,22 +648,14 @@ fib threshold 350
 
 #############################
 #Storing animation 
-
 #Writer = animation.writers['ffmpeg']
 #writer = Writer(fps=25, metadata=dict(artist='Me'), bitrate=1800)
-#runc.anim1.save('Recursion6xvom.mp4', fps=25, extra_args=['-vcodec', 'libx264'])
-#runc.anim1.save('')
+#runc.anim1.save('Recursion6testt3.mp4', fps=25, extra_args=['-vcodec', 'libx264'])
 #plt.show()
 #############################
 
-
 """
-#closing pickle files
-d.close()
-e.close()
-f.close()
-g.close()
-#h.close()
+
 """
 
 """

@@ -382,46 +382,28 @@ class Sphere:
         ax.set_title('Sphere Plot, t=0')
         plt.show()
         return surf
-    """
-            
-        if self.plot or self.replot:
-            fig1 = plt.figure()
-            fig2 = plt.figure() 
-            
-            
-            self.ax = fig2.add_subplot(111, projection='3d')
-            self.ax.set_title('3DLattice, Nu = %s' %(self.heart.p_fibrosis))
-            self.ax.set_xlabel('x')
-            self.ax.set_ylabel('y')
-            self.ax.set_zlabel('z')
-           
-            facecol = colours
-            self.surf = self.ax.plot_surface(self.x, self.y, self.z, rstride=1, cstride=1,linewidth = 0, facecolors=cm.gray(facecol), antialiased=False)
-            #plt.draw()
-            
-            self.interval=25
-            self.counter=0
-            if animate == True:
-                self.anim1 = animation.FuncAnimation(fig2, self.updatefig,
-                            frames=200, interval=self.interval, blit=False)
-    def updatefig(self, *args): #Function that yields the data for animation
-   
-        if (self.heart.time % self.heart.heartbeatsteps)==0 and self.heart.time!=0:    #why self.heart.time != 0??
-            self.heart.excitecolumn()
-        if self.plot==True and self.store==False:
-            self.heart.onestep()
-            
-        if self.plot==True and self.store==True:
-            self.gridintime.append(self.heart.grid)
-            self.heart.onestep()
-            
-        self.ax.clear()
-        self.im.set_array(self.heart.grid)
-        facecol = np.absolute(self.heart.grid/self.heart.excitation)
-        self.surf = self.ax.plot_surface(self.x, self.y, self.z, rstride=1, cstride=1,linewidth = 0, facecolors=cm.gray(facecol), antialiased=False)
-        return self.surf,
-        """
+    
+    def plot_colormap(self, colours):
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        x, y, z   = self.ch.points[self.ch.vertices][:,0],self.ch.points[self.ch.vertices][:,1], self.ch.points[self.ch.vertices][:,2]
+        surf = ax.plot_trisurf(x,y,z, triangles=self.ch.simplices, cmap='RdBu')
+      
+        surf.set_array(colours)
+        self.icosahedron_vertices=np.asarray(self.icosahedron_vertices)
+        p=ax.scatter(self.icosahedron_vertices[:,0],self.icosahedron_vertices[:,1], self.icosahedron_vertices[:,2], c='red')
+  
+        ax.view_init(elev=3, azim=-169)
         
+        #self.ax.axis([-1,1,-1,1, -1, 1])
+        
+        ax.set_xlim(-0.55, 0.55)
+        ax.set_ylim(-0.55, 0.55)
+        ax.set_zlim(-0.55, 0.55)
+        ax.set_title('Sphere Plot, t=0')
+        plt.show()
+        return surf
+    
 
 
 """
