@@ -71,9 +71,10 @@ class create_network:
         
         self.heat_map=False
         
-        fileobj=open('tempgridinitialise.pkl','rb')
-        self.tempgrid=pickle.load(fileobj)
-        fileobj.close()
+       # fileobj=open('tempgridinitialise.pkl','rb')
+        #self.tempgrid=pickle.load(fileobj)
+       # fileobj.close()
+        self.tempgrid=np.zeros(self.size)
       
         self.var=np.zeros(self.size)
         
@@ -213,6 +214,13 @@ class create_network:
         self.dysf[self.dysf < self.p_dysf] = 1
         self.dysf[self.dysf != 1] = 0
         self.unexcited=np.random.rand(self.size)
+        
+        fileobj=open('tempgridinitialise.pkl','rb')
+        self.tempgrid=pickle.load(fileobj)
+        fileobj.close()
+      
+        self.var=np.zeros(self.size)
+        
                 
         for elements in self.array_alltransv: #append transversal connections to a new list according to the probability of transv connect
           if decision(self.p_transv):
@@ -287,6 +295,48 @@ class run:
                 
                 
             self.network.onestep()
+    def propagate_storageheat(self,heat_map):
+      
+        #print ("you set store==", self.store)
+        
+        if heat_map==True:
+            self.network.heat_map=True
+        
+        
+        for times in range(self.runs):
+            
+            if self.network.totalruns%5000==0:
+                namepickle='heat_maps'+str(int(self.network.totalruns/5000.))+'.pkl'
+                fileobj1 = open(namepickle, 'wb')
+                pickle.dump(self.network.var, fileobj1, -1)
+                self.network.var=np.zeros(self.network.size)
+                fileobj1.close()       
+            
+                
+            if self.network.totalruns%self.network.heartbeatssteps == 0: #self.time%self.network.heartbeatssteps==0:
+                for elements in self.network.impulse_start:
+                    self.network.excite(elements)
+                
+            self.time+=1
+            self.network.totalruns+=1
+            if self.store==True:
+                #self.excitedhistory.append(self.network.excited)
+                self.num_excited.append(len(self.network.excited))
+                
+                
+                
+                if self.num_excited[-1]>=self.fib_threshold: # if more excited cells than threshold enters fib
+                    self.fibrillation()
+                elif self.infibrillation==True:   # if in fibrillation  and if the num excited has been below the threshold for two cicles(heartbeatsteps) then it stops fib
+                    if len(self.num_excited) > 2*self.network.heartbeatssteps:
+                         if all(i <= self.fib_threshold for i in self.num_excited[-(1+2*self.network.heartbeatssteps):]):
+                             self.stopfibrillation()
+                    
+                
+                
+            self.network.onestep()
+
+
 
     
    
@@ -550,7 +600,7 @@ class Define_Connections:
 
 
 
-s = sp.Sphere( recursion_level = 6 )
+#s = sp.Sphere( recursion_level = 6 )
 #opening pickled files for reinstatement of connections
 #'s.construct_icosphere()
 """
@@ -578,20 +628,20 @@ g.close()
 
 
 
-conn = Define_Connections(s)
-colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
+#conn = Define_Connections(s)
+#colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
 
 
-n = create_network(array_nodesindices = np.arange(len(colours)),
-                   array_vertical = vconn,
-                   array_transv = hconn,
-                   p_transv = 0.2,
-                   impulse_start = pent_ind,
-                   p_dysf = 0.05,
-                   p_unexcitable = 0.05,
-                   excitation = 25, 
-                   hbs = 110)
+#n = create_network(array_nodesindices = np.arange(len(colours)),
+ #                  array_vertical = vconn,
+  #                 array_transv = hconn,
+   #                p_transv = 0.2,
+    #               impulse_start = pent_ind,
+     #              p_dysf = 0.05,
+      #             p_unexcitable = 0.05,
+       #            excitation = 25, 
+        #           hbs = 110)
 
 #runc = run(network = n, plot=False,store=False,runs=1)
 
@@ -601,17 +651,7 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
 
 #for storing data instead
 
-runc = run(network = n, plot=False,store=True,runs=3500,fib_threshold=350)
-runc.propagate_storage(heat_map=True)
 
-n.var=n.var[1:]
-variance=np.zeros(n.size)
-for el in range(n.size):
-    y=n.var[np.nonzero(n.var[:,el]),el]
-    variance[el]=np.std(y)
-    
-
-s.plot_colormap(variance)
 #runc.animator(s)
 
 """

@@ -2,10 +2,11 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import Delaunay
 from scipy.spatial import ConvexHull
 import matplotlib.tri as mtri
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-
+import matplotlib as mpl
 
 class Sphere:
     
@@ -387,12 +388,19 @@ class Sphere:
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         x, y, z   = self.ch.points[self.ch.vertices][:,0],self.ch.points[self.ch.vertices][:,1], self.ch.points[self.ch.vertices][:,2]
-        surf = ax.plot_trisurf(x,y,z, triangles=self.ch.simplices, cmap='RdBu')
+        surf = ax.plot_trisurf(x,y,z, triangles=self.ch.simplices, cmap='RdBu',vmin=np.min(colours),vmax=np.max(colours))
+        #norm = mpl.colors.Normalize(vmin=np.min(colours),vmax=np.max(colours))
+        
+        fig.colorbar(surf)
+        
       
         surf.set_array(colours)
+        
+        
         self.icosahedron_vertices=np.asarray(self.icosahedron_vertices)
         p=ax.scatter(self.icosahedron_vertices[:,0],self.icosahedron_vertices[:,1], self.icosahedron_vertices[:,2], c='red')
-  
+        
+      
         ax.view_init(elev=3, azim=-169)
         
         #self.ax.axis([-1,1,-1,1, -1, 1])

@@ -60,7 +60,7 @@ n_fib_err = []
 t_in_fib = []
 
 #fileobj0 = open('realizationdata', 'wb')
-
+"""
 for elements in p_transversalconn:
     print("Nu = %s" %(elements))
 
@@ -137,15 +137,29 @@ fileobj6.close()
 fileobj7.close()
 fileobj8.close()
 fileobj9.close()
+"""
+fileobj1 = open('risk.pkl', 'wb')
+fileobj2 = open('riskerrorr.pkl', 'wb')
+risk=pickle.load(fileobj1)
+
+riskstd=pickle.load(fileobj1)
+fileobj1.close()
+fileobj2.close()
+tau=50
+delta_l=40000*0.05
+
+teo=1-(1-(1-kishnu)**tau)**((delta_l)**2))
+
     
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_xlabel("Percentage transversal Connections/Nu")
 ax.set_ylabel("Mean time in AF/Risk of AF")
-ax.plot(p_transversalconn,risk, 'bo', label = 'Data From Model')
+ax.plot(p_transversalconn,risk, 'bo', label = 'Data from our Model')
+ax.plot(kishnu,teo, 'r-', label = 'Theoretical fitting')
 ax.errorbar(p_transversalconn,risk, yerr=riskstd, fmt='o')
 #plt.errorbar(p_transversalconn,n_fib_avg, yerr=n_fib_err, fmt='o')
-ax.plot(kishnu, kishrisk, 'g^', label = 'Kishans Data')
+ax.plot(kishnu, kishrisk, 'g^', label = 'Data from Kishans model')
 ax.errorbar(kishnu, kishrisk, yerr=kisherror, fmt='^')
 ax.legend()
 ax.set_title('Risk Curve')
