@@ -310,7 +310,11 @@ class run:
 
         self.surf, self.fig = self.plot_sphere_a(sph)
         self.sph = sph
+<<<<<<< HEAD:Sphere Model/Final Sphere/Network_Projection_Appended.py
         self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (self.network.nodes/len(self.network.nodes), self.surf),
+=======
+        self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
+>>>>>>> origin/master:Sphere Model/New Network With Proper Propagation/Network_Projection_Appended.py
                 frames=self.runs, interval=25, blit=False)
         if self.store==True:
                 self.excitedhistory.append(self.network.excited)
