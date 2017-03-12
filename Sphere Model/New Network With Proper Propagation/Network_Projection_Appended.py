@@ -560,7 +560,7 @@ g.close()
 """
 
 
-
+"""
 conn = Define_Connections(s)
 colours, vconn, hconn, pent_ind = conn.define_connections() #not needed if using pickled data
 
@@ -575,6 +575,7 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
                    p_unexcitable = 0.05,
                    excitation = 25, 
                    hbs = 110)
+"""
 
 #runc = run(network = n, plot=False,store=False,runs=1)
 
@@ -584,7 +585,7 @@ n = create_network(array_nodesindices = np.arange(len(colours)),
 
 #for storing data instead
 
-runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=350)
+#runc = run(network = n, plot=False,store=True,runs=1000,fib_threshold=350)
 #runc.propagate_storage(heat_map=True)
 #s.plot_sphere(n.heat/(1000./25))
 #runc.animator(s)
@@ -618,7 +619,7 @@ fib threshold 350
 
 
 
-conn.connectome() #visualisation of connections, as you've seen
+#conn.connectome() #visualisation of connections, as you've seen
 
 
 #############################
