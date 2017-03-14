@@ -13,6 +13,7 @@ from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import types
 import pickle
 import ico_prop_projection as sp
+from matplotlib.colors import LightSource
 
 def decision(p):
     if np.random.random()<p:
@@ -310,12 +311,11 @@ class run:
 
         self.surf, self.fig = self.plot_sphere_a(sph)
         self.sph = sph
-<<<<<<< HEAD:Sphere Model/Final Sphere/Network_Projection_Appended.py
-        self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (self.network.nodes/len(self.network.nodes), self.surf),
-=======
-        self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
->>>>>>> origin/master:Sphere Model/New Network With Proper Propagation/Network_Projection_Appended.py
-                frames=self.runs, interval=25, blit=False)
+
+        self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs =(self.network.nodes/len(self.network.nodes), self.surf),frames=self.runs, interval=25, blit=False)
+
+        #self.anim1 = animation.FuncAnimation(self.fig, self.updatefig, fargs = (colours, self.surf),
+        #        frames=self.runs, interval=25, blit=False)
         if self.store==True:
                 self.excitedhistory.append(self.network.excited)
                 self.num_excited.append(len(self.network.excited))
@@ -363,10 +363,14 @@ class run:
                 
                 
     def plot_sphere_a(self, sph):
+        
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111, projection='3d')#.gca(projection='3d')projection = 'mollweide'
         #self.ax = self.fig.add_subplot(111)#, projection = '3d') #'mollweide')#.gca(projection='3d')projection = 'mollweide'
-        self.ax.view_init(elev=40., azim=0)
+        
+                                             
+        #self.ax.view_init(elev=40., azim=0)
+        self.ax.view_init(elev=0, azim=0)                           
         
         #self.ax.axis([-1,1,-1,1, -1, 1])
         
@@ -379,6 +383,7 @@ class run:
         #axes.set_xlim([-4,4])
         #axes.set_ylim([-5,35])
         self.x, self.y, self.z   = sph.ch.points[sph.ch.vertices][:,0],sph.ch.points[sph.ch.vertices][:,1], sph.ch.points[sph.ch.vertices][:,2]
+      
         #print("self.x", self.x)
         #self.avg = (self.xc+ self.yc+ self.zc)/3
         #self.x, self.y = sph.Mercator_Projection(-2.3*np.pi/8.)#sph.Mercator_Projection()#s#Mollewide
@@ -393,7 +398,15 @@ class run:
         #self.triangles = tri.simplices
         #mask = [s]
         #self.surf =plt.tripcolor(self.x, self.y,  self.triangles, facecolors = self.triangles[:,0])#facecolours = self.triangles[:,0], edgecolors = 'k')#, cmap=plt.cm.Greys_r, antialiased=False)
+        
+        
         self.surf = self.ax.plot_trisurf(self.x,self.y,self.z, triangles=sph.ch.simplices, cmap=plt.cm.Greys_r, alpha = 1)
+        
+        #light = LightSource(45, 90)
+        #illuminated_surface = light.shade(sph.ch.simplices, cmap=plt.cm.Greys_r)
+        #self.surf = self.ax.plot_trisurf(self.x,self.y,self.z,facecolors=illuminated_surface, alpha = 1)
+        
+        
         #self.surf.set_array(colours)
         #sph.icosahedron_vertices=np.asarray(sph.icosahedron_vertices)
         #self.ax.scatter(sph.icosahedron_vertices[:,0],sph.icosahedron_vertices[:,1], sph.icosahedron_vertices[:,2], c='red')
